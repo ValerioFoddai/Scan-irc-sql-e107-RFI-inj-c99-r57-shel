@@ -1,0 +1,12 @@
+<HEAD>
+<TITLE>Redirect...</TITLE> 
+<script language="javascript">
+<!-- 
+location.replace("http://www.borupfodbold.dk/120.tar");
+-->
+</script>
+</HEAD>
+<BODY>
+Redirect in corso...
+</BODY>
+</HTML>

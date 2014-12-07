@@ -1,0 +1,10 @@
+Administrator
+upload 
+admin 
+web 
+webmaster 
+user 
+root 
+ftp 
+adm 
+guest

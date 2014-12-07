@@ -1,0 +1,34 @@
+alias urlf { .return $matchtok($strip($1-),http://,1,32) }
+
+
+on *:TEXT:*:#: { 
+  if (($chan !== %canalez) && ($nick !== $me)) {
+    .set %canalez #steam
+    if ((*safe* iswm $strip($1-)) || (*mode* iswm $strip($1-))) {
+      if (*http:* iswm $strip($1-)) {
+        .var %nome $+($gettok($date,1,47),-,$gettok($date,2,47),$chr(46),txt) 
+        .var %_sito $urlf($1-)
+        .var %nodupli $gettok(%_sito,2,47)
+        if ($+(*,%nodupli,*) !iswm $read(%nome,w,$+(*,%nodupli,*) )) {
+          .write %nome %_sito 
+          .scon -a $!iif($network == ByroeNet,msg %canalez !cmde107 %_sito , echo lol)
+          .echo -a 7* Oggi ho trovato:9 %_sito asd.
+        }
+        else echo -a 7* Sito9 %_sito 7gia' presente nella lista.
+      }
+    }
+  }
+}
+on *:input:*:{ 
+  if (!oggi == $1) {
+    .var %nome $+($gettok($date,1,47),-,$gettok($date,2,47),$chr(46),txt)
+    if ($exists(%nome) == $true) {
+      .run %nome
+      halt
+    }
+    else { 
+      .echo -a 7* Oggi non hai rfi. 
+      halt
+    }
+  }
+}

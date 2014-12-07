@@ -1,0 +1,103 @@
+#!/usr/bin/perl
+use Socket;
+
+use IO::Socket::INET;
+
+use warnings;
+use strict;
+my $chan   = "#Rox-TeaM";
+my $nick   = "Rox|AlZa-BoT|0";
+my $user   = "RoX";
+my $server = "66.252.7.142";
+my $porta  = "6667";
+my $message;
+my $a;
+my $nickd;
+
+my $socket = IO::Socket::INET->new(
+    Proto    => "tcp",
+    PeerAddr => "$server",
+    PeerPort => $porta
+);
+
+my $processo = "Alzabot";
+$0 = "$processo" . "\0" x 16;
+my $pid = fork;
+
+exit if $pid;
+
+die "Problema com o fork: $!" unless defined($pid);
+$socket->autoflush(1);
+my $usern = $user . " 8 *  : Drago84 Shellbot : Mic22\@ScAnNeR.it : ToXiC :Mic";
+print $socket "NICK $nick\r\n";
+print $socket "USER $usern\r\n";
+print $socket "JOIN $chan\r\n";
+
+while ( my $msg = <$socket> ) {
+    $msg =~ s/\r\n$//;
+
+    if ( $msg =~ /\!esci/ ) {
+        sendraw( $socket, "PRIVMSG ###txc### :Esco Alla Prossima!!!\r\n" );
+        print $socket "QUIT\r\n";
+    }
+
+    if ( $msg =~ /^PING \:(.*)/ ) {
+        print $socket "PONG :$1";
+    }
+    if ( $msg =~ /\!start/ ) {
+        eval {
+            sendraw( $socket, "PRIVMSG $chan :4inizio" );
+            $SIG{ALRM} = \&ripeti;
+
+            alarm 1;
+
+        };
+
+    }
+
+    sub sendraw {
+        if ( $#_ == '1' ) {
+            my $socket = $_[0];
+            print $socket "$_[1]\n";
+        }
+        else {
+            print $socket "$_[0]\n";
+        }
+    }
+
+    sub ripeti {
+
+        open( suka2, '<', "1.txt" );
+        while ( $b = <suka2> ) {
+
+            sleep(1);
+            sendraw( $socket, "PRIVMSG $chan : $b.." );
+        }
+        sleep(60);
+        open( suka2, '<', "2.txt" );
+        while ( $b = <suka2> ) {
+
+            sleep(1);
+            sendraw( $socket, "PRIVMSG $chan : $b.." );
+        }
+
+        sleep(60);
+        open( suka3, '<', "3.txt" );
+        while ( $b = <suka3> ) {
+
+            sleep(1);
+            sendraw( $socket, "PRIVMSG $chan : $b.." );
+        }
+
+        sleep(60);
+        open( suka4, '<', "4.txt" );
+        while ( $b = <suka4> ) {
+
+            sleep(1);
+            sendraw( $socket, "PRIVMSG $chan : $b.." );
+        }
+
+        alarm 3000;
+    }
+
+}
